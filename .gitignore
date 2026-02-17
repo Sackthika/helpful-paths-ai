@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+*.sqlite
+hospital.sqlite
+.env
+backend/hospital.sqlite
+helpful-paths-ai/node_modules
+helpful-paths-ai/dist
