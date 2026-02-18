@@ -1,9 +1,14 @@
 import { Sequelize, DataTypes, Model } from 'sequelize';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Paths to frontend dataset
+const DATASET_DIR = path.join(__dirname, '../../helpful-paths-ai/src/data/dataset');
+const DEPARTMENTS_JSON = path.join(DATASET_DIR, 'departments.json');
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
@@ -68,48 +73,44 @@ Patient.init(
 );
 
 export const initDb = async () => {
-    await sequelize.sync({ force: true }); // Rebuild DB with new dataset
+    try {
+        await sequelize.sync({ force: true });
 
-    const departments = [
-        { id: "reception", name: "Reception & Help Desk", nameTA: "வரவேற்பு மற்றும் உதவி மையம்", floor: 0, block: "A", side: "Main Entrance", sideTA: "முக்கிய நுழைவாயில்", room: "G01", category: "General", keywords: "reception,front desk,help,information,entrance,inquiry,visitor,pass", keywordsTA: "வரவேற்பு,உதவி,தகவல்,நுழைவாயில்,விசாரணை", x: 50, y: 30, occupancy: 45, waitTime: 5 },
-        { id: "emergency", name: "Emergency & Trauma Centre", nameTA: "அவசர மற்றும் காயம் சிகிச்சை மையம்", floor: 0, block: "A", side: "Left Wing (Ground Floor)", sideTA: "இடது பக்கம் (தரை தளம்)", room: "G05", category: "Emergency", keywords: "emergency,er,accident,trauma,urgent,ambulance,casualty,critical", keywordsTA: "அவசரம்,அவசர சிகிச்சை,விபத்து,காயம்,ஆம்புலன்ஸ்", x: 15, y: 50, occupancy: 85, waitTime: 5 },
-        { id: "pharmacy", name: "Main Pharmacy", nameTA: "முக்கிய மருந்தகம்", floor: 0, block: "B", side: "Right Wing (Ground Floor)", sideTA: "வலது பக்கம் (தரை தளம்)", room: "G10", category: "Services", keywords: "pharmacy,medicine,drug,medical store,tablets,prescription,dispensary", keywordsTA: "மருந்தகம்,மருந்து,மாத்திரை,மருந்துச்சீட்டு", x: 78, y: 65, occupancy: 30, waitTime: 10 },
-        { id: "billing", name: "Billing & Cash Counter", nameTA: "பில்லிங் மற்றும் கட்டண கவுண்டர்", floor: 0, block: "A", side: "Right Side (Ground Floor)", sideTA: "வலது பக்கம் (தரை தளம்)", room: "G03", category: "Services", keywords: "billing,payment,cashier,pay,bill,invoice,insurance,receipt", keywordsTA: "பில்லிங்,கட்டணம்,பணம்,ரசீது,காப்பீடு", x: 62, y: 28, occupancy: 60, waitTime: 8 },
-        { id: "lab", name: "Clinical Laboratory", nameTA: "மருத்துவ ஆய்வகம்", floor: 0, block: "B", side: "Rear Wing (Ground Floor)", sideTA: "பின் பக்கம் (தரை தளம்)", room: "G12", category: "Diagnostics", keywords: "lab,laboratory,blood test,test,sample,urine test,pathology", keywordsTA: "ஆய்வகம்,இரத்த பரிசோதனை,சிறுநீர் பரிசோதனை,மாதிரி", x: 82, y: 38, occupancy: 20, waitTime: 20 },
-        { id: "cardiology", name: "Cardiology OPD", nameTA: "இதய நோய் பிரிவு", floor: 1, block: "B", side: "East Wing", sideTA: "கிழக்கு பக்கம்", room: "104", category: "OPD", keywords: "cardiology,heart,cardiac,chest pain,ecg,echo,angiogram", keywordsTA: "இதயம்,இதய நோய்,நெஞ்சு வலி,இரத்த அழுத்தம்", x: 58, y: 32, occupancy: 40, waitTime: 12 },
-        { id: "orthopedics", name: "Orthopaedics & Bone Clinic", nameTA: "எலும்பு மற்றும் மூட்டு சிகிச்சை பிரிவு", floor: 1, block: "A", side: "West Wing", sideTA: "மேற்கு பக்கம்", room: "108", category: "OPD", keywords: "orthopedics,bone,fracture,joint,knee,spine,hip,arthritis", keywordsTA: "எலும்பு,மூட்டு,முழங்கால்,முதுகெலும்பு,கை கால் வலி", x: 28, y: 48, occupancy: 55, waitTime: 25 },
-        { id: "neurology", name: "Neurology OPD", nameTA: "நரம்பு நோய் பிரிவு", floor: 1, block: "C", side: "North Wing", sideTA: "வடக்கு பக்கம்", room: "112", category: "OPD", keywords: "neurology,neuro,brain,nerve,headache,seizure,epilepsy,stroke", keywordsTA: "நரம்பு,மூளை,தலைவலி,வலிப்பு,பக்கவாதம்", x: 82, y: 58, occupancy: 15, waitTime: 10 },
-        { id: "icu", name: "Intensive Care Unit (ICU)", nameTA: "தீவிர சிகிச்சை பிரிவு (ICU)", floor: 2, block: "A", side: "North Wing", sideTA: "வடக்கு பக்கம்", room: "201", category: "Critical", keywords: "icu,intensive care,critical,ventilator,life support,monitoring", keywordsTA: "தீவிர சிகிச்சை,ஐசியூ,வென்டிலேட்டர்,கோமா", x: 22, y: 38, occupancy: 90, waitTime: 0 },
-        { id: "nicu", name: "Neonatal ICU (NICU)", nameTA: "புதுப்பிறந்த குழந்தை தீவிர சிகிச்சை பிரிவு", floor: 2, block: "C", side: "South Wing", sideTA: "தெற்கு பக்கம்", room: "215", category: "Critical", keywords: "nicu,neonatal,newborn,premature,infant,baby icu", keywordsTA: "புதுப்பிறந்த குழந்தை,குழந்தை தீவிர சிகிச்சை,இன்குபேட்டர்", x: 82, y: 72, occupancy: 70, waitTime: 0 },
-        { id: "ot", name: "Operation Theatre Complex", nameTA: "அறுவை சிகிச்சை அரங்கம்", floor: 2, block: "A", side: "Centre Wing", sideTA: "மையப் பகுதி", room: "202", category: "Critical", keywords: "operation theatre,ot,surgery,anesthesia,surgical,sterile", keywordsTA: "அறுவை சிகிச்சை அரங்கம்,ஓடி,மயக்க மருந்து", x: 32, y: 55, occupancy: 60, waitTime: 0 },
-        { id: "pediatrics", name: "Paediatrics Ward", nameTA: "குழந்தை நல பிரிவு", floor: 2, block: "C", side: "South Wing", sideTA: "தெற்கு பக்கம்", room: "210", category: "Ward", keywords: "pediatrics,child,children,baby,kids,vaccination", keywordsTA: "குழந்தை,குழந்தை நல,குழந்தை மருத்துவர்,தடுப்பூசி", x: 80, y: 52, occupancy: 65, waitTime: 5 },
-        { id: "gynecology", name: "Gynaecology & Obstetrics", nameTA: "மகளிர் மருத்துவம் மற்றும் மகப்பேறு", floor: 2, block: "B", side: "East Wing", sideTA: "கிழக்கு பக்கம்", room: "207", category: "OPD", keywords: "gynecology,women,maternity,pregnancy,delivery,labour", keywordsTA: "மகளிர்,பெண்கள்,கர்ப்பம்,மகப்பேறு,பிரசவம்,மாதவிடாய்", x: 58, y: 62, occupancy: 35, waitTime: 12 },
-        { id: "ophthalmology", name: "Ophthalmology (Eye Clinic)", "nameTA": "கண் மருத்துவ பிரிவு", floor: 3, block: "B", side: "East Wing", sideTA: "கிழக்கு பக்கம்", room: "305", category: "OPD", keywords: "ophthalmology,eye,vision,cataract,glasses,glaucoma", keywordsTA: "கண்,பார்வை,கண்புரை,கண்ணாடி,கண் அறுவை சிகிச்சை", x: 65, y: 48, occupancy: 50, waitTime: 20 },
-        { id: "dental", "name": "Dental Clinic", "nameTA": "பல் மருத்துவ பிரிவு", floor: 3, block: "B", side: "South Wing", sideTA: "தெற்கு பக்கம்", room: "318", category: "OPD", keywords: "dental,dentist,tooth,teeth,root canal,extraction,cavity", keywordsTA: "பல்,பல் மருத்துவர்,பல் வலி,பல் சிகிச்சை", x: 68, y: 65, occupancy: 35, waitTime: 12 },
-        { id: "physiotherapy", "name": "Physiotherapy Centre", "nameTA": "இயன்முறை சிகிச்சை மையம்", "floor": 3, block: "A", side: "South Wing", sideTA: "தெற்கு பக்கம்", room: "315", category: "Services", keywords: "physiotherapy,rehab,exercise,therapy,stroke rehab,physio", keywordsTA: "இயன்முறை சிகிச்சை,மறுவாழ்வு,உடற்பயிற்சி,முதுகு வலி", x: 25, y: 68, occupancy: 30, waitTime: 10 },
-        { id: "admin", "name": "Hospital Administration", "nameTA": "நிர்வாகம்", "floor": 3, "block": "A", "side": "North Wing", "sideTA": "வடக்கு பக்கம்", "room": "302", "category": "Admin", "keywords": "admin,office,management,records,hr,director", "keywordsTA": "நிர்வாகம்,அலுவலகம்,மருத்துவ பதிவு,சான்றிதழ்", x: 28, y: 22, occupancy: 10, waitTime: 0 },
-        { id: "radiology", "name": "Radiology & Imaging (X-Ray/Scan)", "nameTA": "கதிரியக்கவியல் மற்ற்ம் இமேஜிங்", "floor": 0, "block": "D", "side": "Rear Side", "sideTA": "பின் பக்கம்", "room": "D01", "category": "Diagnostics", "keywords": "radiology,x-ray,scan,mri,ct,ultrasound,imaging", "keywordsTA": "எக்ஸ்ரே,ஸ்கேன்,அல்ட்ராசவுண்ட்,எம்ஆர்ஐ,சிடி ஸ்கேன்", x: 30, "y": 110, occupancy: 70, waitTime: 30 },
-        { "id": "canteen", "name": "Cafeteria & Dining", "nameTA": "உணவகம்", "floor": 0, "block": "B", "side": "North side", "sideTA": "வடக்கு பக்கம்", "room": "G20", "category": "Services", "keywords": "canteen,cafe,food,eat,lunch,coffee", "keywordsTA": "உணவகம்,சாப்பிட,சாப்பாடு,காபி", "x": 85, "y": 25, "occupancy": 40, "waitTime": 5 }
-    ];
+        // Load Departments from Frontend JSON
+        let departments = [];
+        if (fs.existsSync(DEPARTMENTS_JSON)) {
+            const rawData = fs.readFileSync(DEPARTMENTS_JSON, 'utf8');
+            departments = JSON.parse(rawData);
+            console.log('📖 Loading departments from frontend dataset...');
+        } else {
+            console.warn('⚠️ Frontend departments.json not found, using fallback data.');
+            departments = [
+                { id: "reception", name: "Reception", nameTA: "வரவேற்பு", floor: 0, block: "A", side: "Entrance", sideTA: "நுழைவாயில்", room: "G01", category: "General", keywords: "help", keywordsTA: "உதவி", x: 50, y: 30 }
+            ];
+        }
 
-    await Department.bulkCreate(departments);
+        await Department.bulkCreate(departments);
 
-    const patients = [
-        { id: "P101", name: "Arun Jaya", room: "201", floor: 2 },
-        { id: "P102", name: "Selvi Mani", room: "207", floor: 2 },
-        { id: "P103", name: "Kumar Raj", room: "210", floor: 2 },
-        { id: "P104", name: "Priya Selvam", room: "G05", floor: 0 },
-        { id: "P105", name: "Suresh Rao", room: "305", floor: 3 },
-        { id: "P106", name: "Kaviya Sri", room: "104", floor: 1 },
-        { id: "P107", name: "Balu Nathan", room: "108", floor: 1 },
-        { id: "P108", name: "Anitha Devi", room: "112", floor: 1 },
-        { id: "P109", name: "Muthu Vel", room: "215", floor: 2 },
-        { id: "P110", name: "Deepa Rani", room: "318", floor: 3 }
-    ];
+        const patients = [
+            { id: "P101", name: "Arun Jaya", room: "201", floor: 2 },
+            { id: "P102", name: "Selvi Mani", room: "207", floor: 2 },
+            { id: "P103", name: "Kumar Raj", room: "210", floor: 2 },
+            { id: "P104", name: "Priya Selvam", room: "G05", floor: 0 },
+            { id: "P105", name: "Suresh Rao", room: "305", floor: 3 },
+            { id: "P106", name: "Kaviya Sri", room: "104", floor: 1 },
+            { id: "P107", name: "Balu Nathan", room: "108", floor: 1 },
+            { id: "P108", name: "Anitha Devi", room: "112", floor: 1 },
+            { id: "P109", name: "Muthu Vel", room: "215", floor: 2 },
+            { id: "P110", name: "Deepa Rani", room: "318", floor: 3 }
+        ];
 
-    await Patient.bulkCreate(patients);
+        await Patient.bulkCreate(patients);
 
-    console.log(`✅ Database seeded: ${departments.length} departments, ${patients.length} patients`);
+        console.log(`✅ Database synced with frontend: ${departments.length} departments, ${patients.length} patients`);
+    } catch (error) {
+        console.error('❌ Database initialization failed:', error);
+        throw error;
+    }
 };
 
 export default sequelize;
