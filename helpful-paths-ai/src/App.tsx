@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RoleSelection from "./pages/RoleSelection";
 import KioskPage from "./pages/KioskPage";
+import MobileARView from "./pages/MobileARView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,6 +19,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<RoleSelection />} />
           <Route path="/kiosk" element={<KioskPage />} />
+          <Route path="/ar-navigation" element={<MobileARView />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

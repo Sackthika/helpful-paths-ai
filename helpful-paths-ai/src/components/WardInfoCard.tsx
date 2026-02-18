@@ -84,7 +84,7 @@ export default function WardInfoCard({ dept, lang }: WardInfoCardProps) {
         <div className="bg-primary/5 p-3 rounded-xl border border-primary/10 flex flex-col items-center justify-center text-center gap-2">
           <div className="w-16 h-16 bg-white p-1 rounded-lg shadow-inner">
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=hospital-nav://${dept.id}`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/ar-navigation?deptId=${dept.id}`}
               alt="QR Code"
               className="w-full h-full"
             />
