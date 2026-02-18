@@ -1,0 +1,40 @@
+[
+    {
+        "floor": 0,
+        "label": "Ground Floor",
+        "labelTA": "தரை தளம்",
+        "blocks": [
+            "A",
+            "B"
+        ]
+    },
+    {
+        "floor": 1,
+        "label": "1st Floor",
+        "labelTA": "முதல் தளம்",
+        "blocks": [
+            "A",
+            "B",
+            "C"
+        ]
+    },
+    {
+        "floor": 2,
+        "label": "2nd Floor",
+        "labelTA": "இரண்டாம் தளம்",
+        "blocks": [
+            "A",
+            "B",
+            "C"
+        ]
+    },
+    {
+        "floor": 3,
+        "label": "3rd Floor",
+        "labelTA": "மூன்றாம் தளம்",
+        "blocks": [
+            "A",
+            "B"
+        ]
+    }
+]
