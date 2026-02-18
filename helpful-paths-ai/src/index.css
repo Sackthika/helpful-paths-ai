@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,57 +6,58 @@
 
 @layer base {
   :root {
-    --background: 200 25% 8%;
-    --foreground: 180 10% 95%;
+    /* Professional Slate & Indigo Theme */
+    --background: 222 47% 11%;
+    --foreground: 213 31% 91%;
 
-    --card: 200 20% 12%;
-    --card-foreground: 180 10% 95%;
+    --card: 222 47% 14%;
+    --card-foreground: 213 31% 91%;
 
-    --popover: 200 20% 12%;
-    --popover-foreground: 180 10% 95%;
+    --popover: 222 47% 12%;
+    --popover-foreground: 213 31% 91%;
 
-    --primary: 174 72% 46%;
-    --primary-foreground: 200 25% 8%;
+    --primary: 250 89% 65%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 18% 18%;
-    --secondary-foreground: 180 10% 85%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 215 20% 65%;
 
-    --muted: 200 15% 15%;
-    --muted-foreground: 200 10% 55%;
+    --muted: 223 47% 20%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 174 72% 46%;
-    --accent-foreground: 200 25% 8%;
+    --accent: 250 89% 65%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 55%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 200 15% 20%;
-    --input: 200 15% 20%;
-    --ring: 174 72% 46%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 250 89% 65%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Custom tokens */
-    --kiosk-glow: 174 72% 46%;
-    --kiosk-surface: 200 20% 10%;
-    --kiosk-surface-hover: 200 18% 14%;
-    --floor-ground: 200 20% 15%;
-    --floor-highlight: 174 72% 46%;
-    --floor-path: 45 100% 60%;
-    --chat-user: 200 18% 18%;
-    --chat-bot: 174 40% 18%;
-    --voice-active: 0 80% 55%;
-    --voice-pulse: 174 72% 46%;
-    --tamil-accent: 35 90% 55%;
+    /* Custom tokens for Hospital UI */
+    --kiosk-glow: 250 89% 65%;
+    --kiosk-surface: 222 47% 13%;
+    --kiosk-surface-hover: 222 47% 18%;
+    --floor-ground: 222 47% 20%;
+    --floor-highlight: 250 89% 65%;
+    --floor-path: 45 93% 47%;
+    --chat-user: 250 89% 65%;
+    --chat-bot: 222 47% 20%;
+    --voice-active: 0 91% 62%;
+    --voice-pulse: 250 89% 65%;
+    --tamil-accent: 38 92% 50%;
 
-    --sidebar-background: 200 20% 10%;
-    --sidebar-foreground: 180 10% 95%;
-    --sidebar-primary: 174 72% 46%;
-    --sidebar-primary-foreground: 200 25% 8%;
-    --sidebar-accent: 200 18% 18%;
-    --sidebar-accent-foreground: 180 10% 85%;
-    --sidebar-border: 200 15% 20%;
-    --sidebar-ring: 174 72% 46%;
+    --sidebar-background: 222 47% 12%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 250 89% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border: 217 33% 25%;
+    --sidebar-ring: 250 89% 65%;
   }
 }
 
@@ -74,23 +75,26 @@
   h2,
   h3,
   h4 {
-    font-family: 'Space Grotesk', 'Noto Sans Tamil', sans-serif;
+    font-family: 'Outfit', 'Noto Sans Tamil', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
   .glow-primary {
-    box-shadow: 0 0 20px hsl(var(--kiosk-glow) / 0.3), 0 0 60px hsl(var(--kiosk-glow) / 0.1);
+    box-shadow: 0 0 25px hsl(var(--primary) / 0.2), 0 0 50px hsl(var(--primary) / 0.1);
   }
 
   .glow-text {
-    text-shadow: 0 0 20px hsl(var(--kiosk-glow) / 0.5);
+    text-shadow: 0 0 15px hsl(var(--primary) / 0.4);
   }
 
   .glass-surface {
-    background: hsl(var(--kiosk-surface) / 0.8);
-    backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border) / 0.5);
+    background: linear-gradient(135deg, hsl(var(--card) / 0.7) 0%, hsl(var(--card) / 0.3) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
   .kiosk-gradient {
