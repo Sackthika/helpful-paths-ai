@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Camera, RefreshCw, X } from 'lucide-react';
+import { Camera, RefreshCw, X, MapPin } from 'lucide-react';
 import Tesseract from 'tesseract.js';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -138,6 +138,29 @@ const CameraAssistant: React.FC<CameraAssistantProps> = ({ onDetected, onClose, 
                             </motion.div>
                         </div>
                     )}
+
+                    {/* AR Markers (Point 8) */}
+                    <AnimatePresence>
+                        {!isProcessing && !error && (
+                            <>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="absolute top-1/4 left-1/4 p-2 bg-blue-600/80 backdrop-blur-md rounded-lg text-white text-[10px] font-bold border border-blue-400/50 flex items-center gap-1 shadow-xl z-10"
+                                >
+                                    <MapPin size={10} /> ENT DEPT [106]
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                    className="absolute bottom-1/3 right-1/4 p-2 bg-green-600/80 backdrop-blur-md rounded-lg text-white text-[10px] font-bold border border-green-400/50 flex items-center gap-1 shadow-xl z-10"
+                                >
+                                    <MapPin size={10} /> PHARMACY [G10]
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 <div className="p-6 bg-muted/30">

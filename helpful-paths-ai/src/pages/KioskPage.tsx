@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, MapPin, Volume2, Camera } from "lucide-react";
+import { Send, MapPin, Volume2, Camera, UserCheck, MessageSquareMore } from "lucide-react";
 import FloorMap from "@/components/FloorMap";
 import WardInfoCard from "@/components/WardInfoCard";
 import ChatMessage from "@/components/ChatMessage";
@@ -9,6 +9,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import FloorSelector from "@/components/FloorSelector";
 import QuickButtons from "@/components/QuickButtons";
 import CameraAssistant from "@/components/CameraAssistant";
+import DoctorDashboard from "@/components/DoctorDashboard";
 import { findDepartment, getDirections, getBotGreeting, getBilingualDirections, getBilingualGreeting, Department } from "@/data/hospitalData";
 
 interface Message {
@@ -26,6 +27,8 @@ export default function KioskPage() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+  const [mode, setMode] = useState<"senior" | "doctor">("senior");
+  const [isLargeFont, setIsLargeFont] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(0);
 
@@ -49,12 +52,19 @@ export default function KioskPage() {
   const handleQuery = useCallback(async (query: string) => {
     if (!query.trim()) return;
 
+    // Language Detection (Point 2)
+    const isTamil = /[\u0B80-\u0BFF]/.test(query);
+    if (isTamil && lang !== 'ta') {
+      setLang('ta');
+    } else if (!isTamil && /^[a-zA-Z\s\d?.]+$/.test(query) && lang !== 'en') {
+      // Simple heuristic for English
+      // setLang('en'); // Maybe don't force back to English if user typed English in Tamil mode?
+    }
+
     const userMsg: Message = { id: ++msgIdRef.current, role: "user", content: query };
     setMessages(prev => [...prev, userMsg]);
     setInput("");
 
-    // Add a temporary "thinking" state or message if needed
-    // For now, we'll just await the backend
     const dept = await findDepartment(query, lang);
 
     setTimeout(() => {
@@ -148,25 +158,62 @@ export default function KioskPage() {
     handleQuery(text);
   };
 
+  const handleEmergency = () => {
+    handleQuery("Emergency");
+    const emergencyDept = {
+      id: "emergency",
+      name: "Emergency / ER",
+      nameTA: "அவசர சிகிச்சை",
+      floor: 0,
+      block: "A",
+      side: "Left Side",
+      sideTA: "இடது பக்கம்",
+      room: "G05",
+      category: "Emergency",
+      keywords: "emergency,er,accident,trauma,urgent",
+      keywordsTA: "அவசரம்,அவசர சிகிச்சை",
+      x: 20,
+      y: 50
+    };
+    setHighlightDept(emergencyDept as Department);
+    setActiveFloor(0);
+  };
+
   return (
-    <div className="min-h-screen kiosk-gradient flex flex-col">
+    <div className={`min-h-screen kiosk-gradient flex flex-col ${isLargeFont ? 'text-xl' : ''}`}>
       {/* Header */}
-      <header className="glass-surface px-8 py-5 flex items-center justify-between">
+      <header className="glass-surface px-8 py-5 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-display font-bold text-xl glow-primary">
             H+
           </div>
           <div>
-            <h1 className="font-display text-2xl font-black text-foreground tracking-tight leading-tight">
+            <h1 className={`${isLargeFont ? 'text-3xl' : 'text-2xl'} font-display font-black text-foreground tracking-tight leading-tight`}>
               Hospital Navigator<br />
-              <span className="text-xl font-extrabold opacity-90">மருத்துவமனை வழிகாட்டி</span>
+              <span className={`${isLargeFont ? 'text-2xl' : 'text-xl'} font-extrabold opacity-90`}>மருத்துவமனை வழிகாட்டி</span>
             </h1>
             <p className="text-sm font-medium text-primary/80 mt-1">
-              AI Senior Citizen Assistant • AI மூத்த குடிமக்கள் உதவியாளர்
+              AI Assistant • AI உதவியாளர்
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleEmergency}
+            className="px-6 py-3 rounded-xl bg-red-600 text-white font-black flex items-center gap-2 hover:bg-red-700 transition-all shadow-lg shadow-red-500/40 animate-pulse"
+          >
+            <div className="w-3 h-3 bg-white rounded-full animate-ping" />
+            {lang === "ta" ? "அவசரம்" : "EMERGENCY"}
+          </button>
+
+          <button
+            onClick={() => setIsLargeFont(!isLargeFont)}
+            className={`p-3 rounded-xl font-bold transition-all shadow-lg ${isLargeFont ? 'bg-primary text-white' : 'bg-muted text-foreground'}`}
+            title="Toggle Large Text"
+          >
+            <span className="text-lg">A+</span>
+          </button>
+
           <button
             onClick={() => setShowCamera(true)}
             className="px-4 py-2 rounded-xl bg-orange-500 text-white font-bold flex items-center gap-2 hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
@@ -186,6 +233,21 @@ export default function KioskPage() {
               <span>{lang === "ta" ? "பேசுகிறது..." : "Speaking..."}</span>
             </motion.div>
           )}
+          <button
+            onClick={() => setMode(m => m === 'senior' ? 'doctor' : 'senior')}
+            className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg ${mode === 'doctor'
+              ? 'bg-blue-600 text-white shadow-blue-500/20'
+              : 'bg-muted text-foreground'
+              }`}
+          >
+            {mode === 'doctor' ? <MessageSquareMore size={18} /> : <UserCheck size={18} />}
+            <span className="hidden sm:inline">
+              {mode === 'doctor'
+                ? (lang === 'ta' ? 'நோயாளி பயன்முறை' : 'Patient Mode')
+                : (lang === 'ta' ? 'டாக்டர் பயன்முறை' : 'Doctor Mode')
+              }
+            </span>
+          </button>
           <LanguageToggle lang={lang} onToggle={() => setLang(l => l === "en" ? "ta" : "en")} />
         </div>
       </header>
@@ -243,43 +305,57 @@ export default function KioskPage() {
           </div>
         </motion.div>
 
-        {/* Chat Panel */}
+        {/* Chat Panel / Doctor Dashboard */}
         <div className="lg:w-1/2 glass-surface rounded-2xl flex flex-col overflow-hidden">
           <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <div className={`w-2 h-2 rounded-full animate-pulse ${mode === 'doctor' ? 'bg-blue-500' : 'bg-primary'}`} />
             <span className="text-sm font-medium">
-              Chat Assistant • உரையாடல்
+              {mode === 'doctor'
+                ? (lang === 'ta' ? 'டாக்டர் டாஷ்போர்டு' : 'Doctor Dashboard')
+                : (lang === 'ta' ? 'உரையாடல்' : 'Chat Assistant')}
             </span>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 scrollbar-thin">
-            {messages.map(msg => (
-              <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
-            ))}
-            <div ref={chatEndRef} />
+            {mode === 'doctor' ? (
+              <DoctorDashboard
+                lang={lang}
+                onNavigate={(dept) => {
+                  setHighlightDept(dept);
+                  setActiveFloor(dept.floor);
+                }}
+              />
+            ) : (
+              <>
+                {messages.map(msg => (
+                  <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
+                ))}
+                <div ref={chatEndRef} />
+              </>
+            )}
           </div>
 
-          {/* Input */}
-          <div className="p-6 border-t border-border bg-muted/20">
-            <form onSubmit={handleSubmit} className="flex items-center gap-3">
-              <VoiceButton isListening={isListening} onToggle={toggleVoiceInput} lang={lang} />
-              <input
-                type="text"
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                placeholder="Where is ICU? (எ.கா. ICU எங்க இருக்கு?)"
-                className="flex-1 bg-secondary text-foreground placeholder:text-muted-foreground rounded-2xl px-6 py-5 text-lg font-medium outline-none focus:ring-4 focus:ring-primary/30 transition-all border border-border"
-              />
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                className="w-16 h-16 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
-              >
-                <Send size={24} />
-              </button>
-            </form>
-          </div>
+          {mode === 'senior' && (
+            <div className="p-6 border-t border-border bg-muted/20">
+              <form onSubmit={handleSubmit} className="flex items-center gap-3">
+                <VoiceButton isListening={isListening} onToggle={toggleVoiceInput} lang={lang} />
+                <input
+                  type="text"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  placeholder="Where is ICU? (எ.கா. ICU எங்க இருக்கு?)"
+                  className="flex-1 bg-secondary text-foreground placeholder:text-muted-foreground rounded-2xl px-6 py-5 text-lg font-medium outline-none focus:ring-4 focus:ring-primary/30 transition-all border border-border"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim()}
+                  className="w-16 h-16 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
+                >
+                  <Send size={24} />
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </div>
 

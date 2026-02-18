@@ -1,13 +1,56 @@
 import express from 'express';
 import cors from 'cors';
 import { Op } from 'sequelize';
-import { Department, initDb } from './database.js';
+import { Department, Patient, initDb } from './database.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Symptom to Department Mapping (Point 3: AI Engine)
+const SYMPTOM_MAP: Record<string, string> = {
+    "heart": "cardiology",
+    "chest pain": "cardiology",
+    "breathing": "cardiology",
+    "bone": "orthopedics",
+    "fracture": "orthopedics",
+    "leg pain": "orthopedics",
+    "headache": "neurology",
+    "seizure": "neurology",
+    "brain": "neurology",
+    "ear": "ent",
+    "nose": "ent",
+    "throat": "ent",
+    "child": "pediatrics",
+    "baby": "pediatrics",
+    "kids": "pediatrics",
+    "pregnancy": "gynecology",
+    "women": "gynecology",
+    "eye": "ophthalmology",
+    "vision": "ophthalmology",
+    "skin": "dermatology",
+    "rash": "dermatology"
+};
+
+const SYMPTOM_MAP_TA: Record<string, string> = {
+    "இதயம்": "cardiology",
+    "நெஞ்சு வலி": "cardiology",
+    "மூச்சு": "cardiology",
+    "எலும்பு": "orthopedics",
+    "கை கால் வலி": "orthopedics",
+    "தலைவலி": "neurology",
+    "மூளை": "neurology",
+    "காது": "ent",
+    "மூக்கு": "ent",
+    "தொண்டை": "ent",
+    "குழந்தை": "pediatrics",
+    "பெண்கள்": "gynecology",
+    "கண்": "ophthalmology",
+    "பார்வை": "ophthalmology",
+    "தோல்": "dermatology"
+};
 
 // Get all departments
 app.get('/api/departments', async (req, res) => {
@@ -18,6 +61,41 @@ app.get('/api/departments', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch departments' });
     }
 });
+
+// Search patients
+app.get('/api/patients/search', async (req, res) => {
+    const { q } = req.query as { q: string };
+
+    if (!q) {
+        return res.status(400).json({ error: 'Query parameter q is required' });
+    }
+
+    const query = q.toLowerCase().trim();
+
+    try {
+        const patient = await Patient.findOne({
+            where: {
+                [Op.or]: [
+                    { id: { [Op.like]: `%${query}%` } },
+                    { name: { [Op.like]: `%${query}%` } }
+                ]
+            }
+        });
+
+        if (patient) {
+            // Find the department/room to get coordinates
+            const dept = await Department.findOne({
+                where: { room: patient.room }
+            });
+            res.json({ ...patient.toJSON(), dept });
+        } else {
+            res.status(404).json({ error: 'Patient not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Patient search failed' });
+    }
+});
+
 
 // Search departments
 app.get('/api/search', async (req, res) => {
@@ -31,6 +109,28 @@ app.get('/api/search', async (req, res) => {
     const roomQuery = query.replace(/^(room|ward|அறை)\s*/i, "").trim();
 
     try {
+        // 0. Try Symptom Match (Point 3: AI Engine)
+        let deptId = null;
+        for (const [symptom, id] of Object.entries(SYMPTOM_MAP)) {
+            if (query.includes(symptom)) {
+                deptId = id;
+                break;
+            }
+        }
+        if (!deptId) {
+            for (const [symptom, id] of Object.entries(SYMPTOM_MAP_TA)) {
+                if (query.includes(symptom)) {
+                    deptId = id;
+                    break;
+                }
+            }
+        }
+
+        if (deptId) {
+            const dept = await Department.findByPk(deptId);
+            if (dept) return res.json(dept);
+        }
+
         // 1. Try room/ward match
         let dept = await Department.findOne({
             where: {

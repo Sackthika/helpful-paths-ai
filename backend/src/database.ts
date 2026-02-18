@@ -25,6 +25,15 @@ export class Department extends Model {
     declare keywordsTA: string; // Stored as comma-separated string
     declare x: number;
     declare y: number;
+    declare occupancy: number; // Point 4: Database
+    declare waitTime: number; // in minutes
+}
+
+export class Patient extends Model {
+    declare id: string;
+    declare name: string;
+    declare room: string;
+    declare floor: number;
 }
 
 Department.init(
@@ -42,10 +51,25 @@ Department.init(
         keywordsTA: { type: DataTypes.TEXT, allowNull: false },
         x: { type: DataTypes.FLOAT, allowNull: false },
         y: { type: DataTypes.FLOAT, allowNull: false },
+        occupancy: { type: DataTypes.INTEGER, defaultValue: 0 },
+        waitTime: { type: DataTypes.INTEGER, defaultValue: 0 },
     },
     {
         sequelize,
         modelName: 'Department',
+    }
+);
+
+Patient.init(
+    {
+        id: { type: DataTypes.STRING, primaryKey: true },
+        name: { type: DataTypes.STRING, allowNull: false },
+        room: { type: DataTypes.STRING, allowNull: false },
+        floor: { type: DataTypes.INTEGER, allowNull: false },
+    },
+    {
+        sequelize,
+        modelName: 'Patient',
     }
 );
 
@@ -54,29 +78,44 @@ export const initDb = async () => {
 
     // Seed initial data only if table is empty
     const count = await Department.count();
-    if (count > 0) return;
+    if (count === 0) {
+        const initialDepartments = [
+            { id: "reception", name: "Reception", nameTA: "வரவேற்பு", floor: 0, block: "A", side: "Main Entrance", sideTA: "முக்கிய நுழைவாயில்", room: "G01", category: "General", keywords: "reception,front desk,help,information,entrance", keywordsTA: "வரவேற்பு,உதவி", x: 50, y: 30, occupancy: 45, waitTime: 5 },
+            { id: "emergency", name: "Emergency / ER", nameTA: "அவசர சிகிச்சை", floor: 0, block: "A", side: "Left Side", sideTA: "இடது பக்கம்", room: "G05", category: "Emergency", keywords: "emergency,er,accident,trauma,urgent", keywordsTA: "அவசரம்,அவசர சிகிச்சை", x: 20, y: 50, occupancy: 85, waitTime: 15 },
+            { id: "pharmacy", name: "Pharmacy", nameTA: "மருந்தகம்", floor: 0, block: "B", side: "Right Side", sideTA: "வலது பக்கம்", room: "G10", category: "Services", keywords: "pharmacy,medicine,drug,medical store,tablets", keywordsTA: "மருந்தகம்,மருந்து", x: 75, y: 70, occupancy: 30, waitTime: 10 },
+            { id: "billing", name: "Billing Counter", nameTA: "பில்லிங் கவுண்டர்", floor: 0, block: "A", side: "Right Side", sideTA: "வலது பக்கம்", room: "G03", category: "Services", keywords: "billing,payment,cashier,pay,bill", keywordsTA: "பில்லிங்,கட்டணம்", x: 60, y: 30, occupancy: 60, waitTime: 8 },
+            { id: "lab", name: "Laboratory", nameTA: "ஆய்வகம்", floor: 0, block: "B", side: "Rear Side", sideTA: "பின் பக்கமாக", room: "G12", category: "Diagnostics", keywords: "lab,laboratory,blood test,test,sample", keywordsTA: "ஆய்வகம்,இரத்த பரிசோதனை", x: 80, y: 40, occupancy: 20, waitTime: 20 },
+            { id: "cardiology", name: "Cardiology OPD", nameTA: "இதய நோய் பிரிவு", floor: 1, block: "B", side: "East Wing", sideTA: "கிழக்கு பகுதி", room: "104", category: "OPD", keywords: "cardiology,heart,cardiac,chest pain,ecg", keywordsTA: "இதயம்,இதய நோய்", x: 55, y: 35, occupancy: 40, waitTime: 12 },
+            { id: "orthopedics", name: "Orthopedics OPD", nameTA: "எலும்பு சிகிச்சை", floor: 1, block: "A", side: "West Wing", sideTA: "மேற்கு பகுதி", room: "108", category: "OPD", keywords: "orthopedics,bone,fracture,joint,knee,spine", keywordsTA: "எலும்பு,மூட்டு", x: 30, y: 50, occupancy: 55, waitTime: 25 },
+            { id: "neurology", name: "Neurology OPD", nameTA: "நரம்பு நோய் பிரிவு", floor: 1, block: "C", side: "North Wing", sideTA: "வடக்கு பகுதி", room: "112", category: "OPD", keywords: "neurology,neuro,brain,nerve,headache,seizure", keywordsTA: "நரம்பு,மூளை", x: 80, y: 60, occupancy: 15, waitTime: 10 },
+            { id: "ent", name: "ENT Department", nameTA: "காது மூக்கு தொண்டை", floor: 1, block: "B", side: "East Wing", sideTA: "கிழக்கு பகுதி", room: "106", category: "OPD", keywords: "ent,ear,nose,throat,hearing", keywordsTA: "காது,மூக்கு,தொண்டை", x: 55, y: 65, occupancy: 25, waitTime: 8 },
+            { id: "radiology", name: "Radiology / X-Ray", nameTA: "கதிரியக்கவியல்", floor: 1, block: "A", side: "West Wing", sideTA: "மேற்கு பகுதி", room: "115", category: "Diagnostics", keywords: "radiology,x-ray,xray,scan,mri,ct,ultrasound", keywordsTA: "எக்ஸ்ரே,ஸ்கேன்", x: 25, y: 30, occupancy: 70, waitTime: 30 },
+            { id: "icu", name: "ICU", nameTA: "தீவிர சிகிச்சை பிரிவு", floor: 2, block: "A", side: "North Side", sideTA: "வடக்குப் பக்கம்", room: "201", category: "Critical", keywords: "icu,intensive care,critical,ventilator", keywordsTA: "தீவிர சிகிச்சை,ஐசியூ", x: 25, y: 40, occupancy: 90, waitTime: 0 },
+            { id: "surgery", name: "Surgery Ward", nameTA: "அறுவை சிகிச்சை பிரிவு", floor: 2, block: "B", side: "Central Area", sideTA: "மையப் பகுதி", room: "204", category: "Ward", keywords: "surgery,operation,ot,operation theatre", keywordsTA: "அறுவை சிகிச்சை,ஆபரேஷன்", x: 55, y: 35, occupancy: 80, waitTime: 0 },
+            { id: "pediatrics", name: "Pediatrics Ward", nameTA: "குழந்தை நல பிரிவு", floor: 2, block: "C", side: "South Wing", sideTA: "தெற்கு பகுதி", room: "210", category: "Ward", keywords: "pediatrics,child,children,baby,kids", keywordsTA: "குழந்தை,குழந்தை நல", x: 80, y: 55, occupancy: 65, waitTime: 5 },
+            { id: "gynecology", name: "Gynecology OPD", nameTA: "மகளிர் மருத்துவம்", floor: 2, block: "B", side: "Central Area", sideTA: "மையப் பகுதி", room: "207", category: "OPD", keywords: "gynecology,gynaecology,women,maternity,pregnancy,obstetrics", keywordsTA: "மகளிர்,பெண்கள்", x: 55, y: 65, occupancy: 35, waitTime: 12 },
+            { id: "dermatology", name: "Dermatology", nameTA: "தோல் நோய் பிரிவு", floor: 3, block: "A", side: "West Wing", sideTA: "மேற்கு பகுதி", room: "301", category: "OPD", keywords: "dermatology,skin,rash,allergy", keywordsTA: "தோல்,சரும", x: 30, y: 40, occupancy: 20, waitTime: 15 },
+            { id: "ophthalmology", name: "Ophthalmology", nameTA: "கண் மருத்துவம்", floor: 3, block: "B", side: "East Wing", sideTA: "கிழக்கு பகுதி", room: "305", category: "OPD", keywords: "ophthalmology,eye,vision,cataract,glasses", keywordsTA: "கண்,பார்வை", x: 65, y: 50, occupancy: 50, waitTime: 20 },
+            { id: "ward3", name: "Ward 3", nameTA: "வார்டு 3", floor: 0, block: "B", side: "North Wing", sideTA: "வடக்கு பகுதி", room: "G15", category: "Ward", keywords: "ward 3,ward3,general ward", keywordsTA: "வார்டு 3,வார்டு3", x: 70, y: 20, occupancy: 95, waitTime: 2 },
+            { id: "admin", name: "Administration", nameTA: "நிர்வாகம்", floor: 3, block: "A", side: "North Wing", sideTA: "வடக்கு பகுதி", room: "310", category: "Admin", keywords: "admin,administration,office,director,management", keywordsTA: "நிர்வாகம்,அலுவலகம்", x: 30, y: 65, occupancy: 10, waitTime: 0 },
+        ];
+        await Department.bulkCreate(initialDepartments);
+    }
 
-    const initialDepartments = [
-        { id: "reception", name: "Reception", nameTA: "வரவேற்பு", floor: 0, block: "A", side: "Main Entrance", sideTA: "முக்கிய நுழைவாயில்", room: "G01", category: "General", keywords: "reception,front desk,help,information,entrance", keywordsTA: "வரவேற்பு,உதவி", x: 50, y: 30 },
-        { id: "emergency", name: "Emergency / ER", nameTA: "அவசர சிகிச்சை", floor: 0, block: "A", side: "Left Side", sideTA: "இடது பக்கம்", room: "G05", category: "Emergency", keywords: "emergency,er,accident,trauma,urgent", keywordsTA: "அவசரம்,அவசர சிகிச்சை", x: 20, y: 50 },
-        { id: "pharmacy", name: "Pharmacy", nameTA: "மருந்தகம்", floor: 0, block: "B", side: "Right Side", sideTA: "வலது பக்கம்", room: "G10", category: "Services", keywords: "pharmacy,medicine,drug,medical store,tablets", keywordsTA: "மருந்தகம்,மருந்து", x: 75, y: 70 },
-        { id: "billing", name: "Billing Counter", nameTA: "பில்லிங் கவுண்டர்", floor: 0, block: "A", side: "Right Side", sideTA: "வலது பக்கம்", room: "G03", category: "Services", keywords: "billing,payment,cashier,pay,bill", keywordsTA: "பில்லிங்,கட்டணம்", x: 60, y: 30 },
-        { id: "lab", name: "Laboratory", nameTA: "ஆய்வகம்", floor: 0, block: "B", side: "Rear Side", sideTA: "பின் பக்கமாக", room: "G12", category: "Diagnostics", keywords: "lab,laboratory,blood test,test,sample", keywordsTA: "ஆய்வகம்,இரத்த பரிசோதனை", x: 80, y: 40 },
-        { id: "cardiology", name: "Cardiology OPD", nameTA: "இதய நோய் பிரிவு", floor: 1, block: "B", side: "East Wing", sideTA: "கிழக்கு பகுதி", room: "104", category: "OPD", keywords: "cardiology,heart,cardiac,chest pain,ecg", keywordsTA: "இதயம்,இதய நோய்", x: 55, y: 35 },
-        { id: "orthopedics", name: "Orthopedics OPD", nameTA: "எலும்பு சிகிச்சை", floor: 1, block: "A", side: "West Wing", sideTA: "மேற்கு பகுதி", room: "108", category: "OPD", keywords: "orthopedics,bone,fracture,joint,knee,spine", keywordsTA: "எலும்பு,மூட்டு", x: 30, y: 50 },
-        { id: "neurology", name: "Neurology OPD", nameTA: "நரம்பு நோய் பிரிவு", floor: 1, block: "C", side: "North Wing", sideTA: "வடக்கு பகுதி", room: "112", category: "OPD", keywords: "neurology,neuro,brain,nerve,headache,seizure", keywordsTA: "நரம்பு,மூளை", x: 80, y: 60 },
-        { id: "ent", name: "ENT Department", nameTA: "காது மூக்கு தொண்டை", floor: 1, block: "B", side: "East Wing", sideTA: "கிழக்கு பகுதி", room: "106", category: "OPD", keywords: "ent,ear,nose,throat,hearing", keywordsTA: "காது,மூக்கு,தொண்டை", x: 55, y: 65 },
-        { id: "radiology", name: "Radiology / X-Ray", nameTA: "கதிரியக்கவியல்", floor: 1, block: "A", side: "West Wing", sideTA: "மேற்கு பகுதி", room: "115", category: "Diagnostics", keywords: "radiology,x-ray,xray,scan,mri,ct,ultrasound", keywordsTA: "எக்ஸ்ரே,ஸ்கேன்", x: 25, y: 30 },
-        { id: "icu", name: "ICU", nameTA: "தீவிர சிகிச்சை பிரிவு", floor: 2, block: "A", side: "North Side", sideTA: "வடக்குப் பக்கம்", room: "201", category: "Critical", keywords: "icu,intensive care,critical,ventilator", keywordsTA: "தீவிர சிகிச்சை,ஐசியூ", x: 25, y: 40 },
-        { id: "surgery", name: "Surgery Ward", nameTA: "அறுவை சிகிச்சை பிரிவு", floor: 2, block: "B", side: "Central Area", sideTA: "மையப் பகுதி", room: "204", category: "Ward", keywords: "surgery,operation,ot,operation theatre", keywordsTA: "அறுவை சிகிச்சை,ஆபரேஷன்", x: 55, y: 35 },
-        { id: "pediatrics", name: "Pediatrics Ward", nameTA: "குழந்தை நல பிரிவு", floor: 2, block: "C", side: "South Wing", sideTA: "தெற்கு பகுதி", room: "210", category: "Ward", keywords: "pediatrics,child,children,baby,kids", keywordsTA: "குழந்தை,குழந்தை நல", x: 80, y: 55 },
-        { id: "gynecology", name: "Gynecology OPD", nameTA: "மகளிர் மருத்துவம்", floor: 2, block: "B", side: "Central Area", sideTA: "மையப் பகுதி", room: "207", category: "OPD", keywords: "gynecology,gynaecology,women,maternity,pregnancy,obstetrics", keywordsTA: "மகளிர்,பெண்கள்", x: 55, y: 65 },
-        { id: "dermatology", name: "Dermatology", nameTA: "தோல் நோய் பிரிவு", floor: 3, block: "A", side: "West Wing", sideTA: "மேற்கு பகுதி", room: "301", category: "OPD", keywords: "dermatology,skin,rash,allergy", keywordsTA: "தோல்,சரும", x: 30, y: 40 },
-        { id: "ophthalmology", name: "Ophthalmology", nameTA: "கண் மருத்துவம்", floor: 3, block: "B", side: "East Wing", sideTA: "கிழக்கு பகுதி", room: "305", category: "OPD", keywords: "ophthalmology,eye,vision,cataract,glasses", keywordsTA: "கண்,பார்வை", x: 65, y: 50 },
-        { id: "admin", name: "Administration", nameTA: "நிர்வாகம்", floor: 3, block: "A", side: "North Wing", sideTA: "வடக்கு பகுதி", room: "310", category: "Admin", keywords: "admin,administration,office,director,management", keywordsTA: "நிர்வாகம்,அலுவலகம்", x: 30, y: 65 },
-    ];
-
-    await Department.bulkCreate(initialDepartments);
+    const patientCount = await Patient.count();
+    if (patientCount === 0) {
+        const initialPatients = [
+            { id: "P001", name: "John Doe", room: "201", floor: 2 },
+            { id: "P002", name: "Jane Smith", room: "108", floor: 1 },
+            { id: "P003", name: "Alice Johnson", room: "210", floor: 2 },
+            { id: "P004", name: "Bob Brown", room: "G05", floor: 0 },
+            { id: "P005", name: "Charlie Davis", room: "305", floor: 3 },
+            { id: "P006", name: "Sarah Connor", room: "G15", floor: 0 },
+            { id: "P007", name: "James Bond", room: "204", floor: 2 },
+            { id: "P008", name: "Ellen Ripley", room: "G12", floor: 0 },
+        ];
+        await Patient.bulkCreate(initialPatients);
+    }
 };
 
 export default sequelize;

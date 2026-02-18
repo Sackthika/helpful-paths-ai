@@ -131,7 +131,7 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
                 strokeDasharray="2 1"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+                transition={{ duration: 2, ease: "easeInOut" }}
               />
             ) : (
               <motion.path
@@ -139,10 +139,13 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
                 fill="none"
                 stroke="hsl(var(--floor-path))"
                 strokeWidth="0.8"
-                strokeDasharray="2 1"
+                strokeDasharray="4 2"
                 initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+                animate={{ pathLength: 1, strokeDashoffset: [0, -6] }}
+                transition={{
+                  pathLength: { duration: 2, ease: "easeInOut" },
+                  strokeDashoffset: { duration: 1, repeat: Infinity, ease: "linear" }
+                }}
               />
             )}
           </g>

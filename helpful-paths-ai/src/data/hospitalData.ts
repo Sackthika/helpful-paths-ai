@@ -12,6 +12,16 @@ export interface Department {
   keywordsTA: string;
   x: number; // position on floor map (percentage)
   y: number;
+  occupancy?: number;
+  waitTime?: number;
+}
+
+export interface Patient {
+  id: string;
+  name: string;
+  room: string;
+  floor: number;
+  dept?: Department;
 }
 
 export interface FloorInfo {
@@ -28,27 +38,38 @@ export const floors: FloorInfo[] = [
   { floor: 3, label: "3rd Floor", labelTA: "மூன்றாம் தளம்", blocks: ["A", "B"] },
 ];
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5000/api';
 
-export async function findDepartment(query: string, lang: "en" | "ta" = "en"): Promise<Department | null> {
+export const getAllDepartments = async (): Promise<Department[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}&lang=${lang}`);
+    const response = await fetch(`${API_URL}/departments`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching departments:', error);
+    return [];
+  }
+};
+
+export const findDepartment = async (query: string, lang: 'en' | 'ta'): Promise<Department | null> => {
+  try {
+    const response = await fetch(`${API_URL}/search/department?q=${encodeURIComponent(query)}&lang=${lang}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
-    console.error('Search error:', error);
+    console.error('Error finding department:', error);
     return null;
   }
-}
+};
 
-export async function getAllDepartments(): Promise<Department[]> {
+export async function findPatient(query: string): Promise<Patient | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/departments`);
-    if (!response.ok) return [];
+    const response = await fetch(`${API_URL}/patients/search?q=${encodeURIComponent(query)}`);
+    if (!response.ok) return null;
     return await response.json();
   } catch (error) {
-    console.error('Fetch error:', error);
-    return [];
+    console.error('Patient search error:', error);
+    return null;
   }
 }
 

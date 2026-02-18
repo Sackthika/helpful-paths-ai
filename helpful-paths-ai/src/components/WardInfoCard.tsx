@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Building2, DoorOpen, Layers, MapPin, Tag } from "lucide-react";
+import { Building2, DoorOpen, Layers, MapPin, Tag, Activity } from "lucide-react";
 import { Department } from "@/data/hospitalData";
 
 interface WardInfoCardProps {
@@ -77,6 +77,33 @@ export default function WardInfoCard({ dept, lang }: WardInfoCardProps) {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Futuristic Tools (Point 8) */}
+      <div className="p-4 pt-0 border-t border-border/30 mt-2 grid grid-cols-2 gap-3">
+        <div className="bg-primary/5 p-3 rounded-xl border border-primary/10 flex flex-col items-center justify-center text-center gap-2">
+          <div className="w-16 h-16 bg-white p-1 rounded-lg shadow-inner">
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=hospital-nav://${dept.id}`}
+              alt="QR Code"
+              className="w-full h-full"
+            />
+          </div>
+          <p className="text-[10px] font-bold text-primary uppercase leading-tight">Scan for Mobile<br />செல்போனில் பார்க்க</p>
+        </div>
+        <div className="bg-orange-500/5 p-3 rounded-xl border border-orange-500/10 flex flex-col items-center justify-center text-center gap-2">
+          <div className="flex items-center gap-1 text-orange-500">
+            <Activity size={18} className="animate-pulse" />
+            <span className="text-xl font-black">{dept.waitTime || 0}</span>
+          </div>
+          <p className="text-[10px] font-bold text-orange-500 uppercase leading-tight italic">
+            {lang === 'ta' ? 'காத்திருப்பு நேரம்' : 'Waiting Time'}<br />
+            {lang === 'ta' ? 'நிமிடங்கள்' : 'Minutes'}
+          </p>
+          <div className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${(dept.occupancy || 0) > 70 ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
+            {(dept.occupancy || 0) > 70 ? 'High Traffic' : 'Low Traffic'}
+          </div>
+        </div>
       </div>
     </motion.div>
   );
