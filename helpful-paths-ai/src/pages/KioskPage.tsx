@@ -41,8 +41,8 @@ export default function KioskPage() {
   useEffect(() => {
     let content = "";
     if (role === 'others') {
-      const gEN = "🏥 Welcome Visitor! Please provide the patient's details below to find them.";
-      const gTA = "🏥 வருகையாளர் நல்வரவு! நோயாளியைக் கண்டறிய அவர்களின் விவரங்களைக் கீழே வழங்கவும்.";
+      const gEN = "🏥 Welcome Visitor! Please provide the patient's details below to find them.\n\n(Examples: 'Arun Jaya', 'P101', or '9876543210')";
+      const gTA = "🏥 வருகையாளர் நல்வரவு! நோயாளியைக் கண்டறிய அவர்களின் விவரங்களைக் கீழே வழங்கவும்.\n\n(உதாரணம்: 'Arun Jaya', 'P101', அல்லது '9876543210')";
       content = `${gEN}\n\n---\n\n${gTA}`;
     } else {
       const bilingual = getBilingualGreeting();
