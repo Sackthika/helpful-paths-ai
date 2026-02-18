@@ -70,14 +70,16 @@ app.get('/api/patients/search', async (req, res) => {
         let patient;
 
         if (name || id || phone || ward) {
-            // Precise search if specific fields are provided
-            const where: any = {};
-            if (name) where.name = { [Op.like]: `%${name}%` };
-            if (id) where.id = { [Op.like]: `%${id}%` };
-            if (phone) where.phoneNumber = { [Op.like]: `%${phone}%` };
-            if (ward) where.ward = { [Op.like]: `%${ward}%` };
+            // Flexible search: match ANY of the provided identifying fields
+            const orConditions: any[] = [];
+            if (name) orConditions.push({ name: { [Op.like]: `%${name.trim()}%` } });
+            if (id) orConditions.push({ id: { [Op.like]: `%${id.trim()}%` } });
+            if (phone) orConditions.push({ phoneNumber: { [Op.like]: `%${phone.trim()}%` } });
+            if (ward) orConditions.push({ ward: { [Op.like]: `%${ward.trim()}%` } });
 
-            patient = await Patient.findOne({ where });
+            patient = await Patient.findOne({
+                where: { [Op.or]: orConditions }
+            });
         } else if (q) {
             // General search
             const query = q.toLowerCase().trim();

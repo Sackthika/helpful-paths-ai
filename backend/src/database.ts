@@ -76,6 +76,8 @@ Patient.init(
     { sequelize, modelName: 'Patient' }
 );
 
+const PATIENTS_JSON = path.join(DATASET_DIR, 'patients.json');
+
 export const initDb = async () => {
     try {
         await sequelize.sync({ force: true });
@@ -95,18 +97,19 @@ export const initDb = async () => {
 
         await Department.bulkCreate(departments);
 
-        const patients = [
-            { id: "P101", name: "Arun Jaya", room: "201", floor: 2, phoneNumber: "9876543210", ward: "General Ward A" },
-            { id: "P102", name: "Selvi Mani", room: "207", floor: 2, phoneNumber: "9876543211", ward: "General Ward A" },
-            { id: "P103", name: "Kumar Raj", room: "210", floor: 2, phoneNumber: "9876543212", ward: "Maternity Ward" },
-            { id: "P104", name: "Priya Selvam", room: "G05", floor: 0, phoneNumber: "9876543213", ward: "ICU" },
-            { id: "P105", name: "Suresh Rao", room: "305", floor: 3, phoneNumber: "9876543214", ward: "Pediatric Ward" },
-            { id: "P106", name: "Kaviya Sri", room: "104", floor: 1, phoneNumber: "9876543215", ward: "General Ward B" },
-            { id: "P107", name: "Balu Nathan", room: "108", floor: 1, phoneNumber: "9876543216", ward: "General Ward B" },
-            { id: "P108", name: "Anitha Devi", room: "112", floor: 1, phoneNumber: "9876543217", ward: "Emergency Ward" },
-            { id: "P109", name: "Muthu Vel", room: "215", floor: 2, phoneNumber: "9876543218", ward: "General Ward C" },
-            { id: "P110", name: "Deepa Rani", room: "318", floor: 3, phoneNumber: "9876543219", ward: "Special Ward" }
-        ];
+        // Load Patients from Frontend JSON
+        let patients = [];
+        if (fs.existsSync(PATIENTS_JSON)) {
+            const rawData = fs.readFileSync(PATIENTS_JSON, 'utf8');
+            patients = JSON.parse(rawData);
+            console.log('📖 Loading patients from frontend dataset...');
+        } else {
+            console.warn('⚠️ Frontend patients.json not found, using internal fallback.');
+            patients = [
+                { id: "P101", name: "Arun Jaya", room: "201", floor: 2, phoneNumber: "9876543210", ward: "General Ward A" },
+                { id: "P102", name: "Selvi Mani", room: "207", floor: 2, phoneNumber: "9876543211", ward: "General Ward A" }
+            ];
+        }
 
         await Patient.bulkCreate(patients);
 
