@@ -1,22 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Stethoscope, Users, Settings, Building2, ChevronRight } from 'lucide-react';
+import { Users, Settings, Building2, ChevronRight } from 'lucide-react';
 
 const RoleSelection = () => {
     const navigate = useNavigate();
 
     const roles = [
-        {
-            id: 'doctor',
-            title: 'Doctor',
-            titleTA: 'மருத்துவர்',
-            icon: <Stethoscope size={40} className="text-primary" />,
-            description: 'Access patient records, analytics and navigation.',
-            descriptionTA: 'நோயாளி பதிவுகள் மற்றும் பகுப்பாய்வு.',
-            color: 'from-primary/20 to-primary/5',
-            borderColor: 'border-primary/30',
-        },
         {
             id: 'patient',
             title: 'Patient',
@@ -73,7 +63,7 @@ const RoleSelection = () => {
             </motion.div>
 
             {/* Roles Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl z-10">
                 {roles.map((role, index) => (
                     <motion.button
                         key={role.id}
