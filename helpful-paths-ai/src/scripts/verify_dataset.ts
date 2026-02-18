@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const datasetDir = path.resolve(__dirname, '../data/dataset');
 
-const loadJson = (filename) => {
+const loadJson = (filename: string) => {
     const filePath = path.join(datasetDir, filename);
     if (!fs.existsSync(filePath)) {
         console.error(`Error: File ${filename} not found at ${filePath}`);
