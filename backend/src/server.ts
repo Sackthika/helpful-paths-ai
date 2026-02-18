@@ -106,7 +106,12 @@ app.get('/api/search', async (req, res) => {
     }
 
     const query = q.toLowerCase().trim();
-    const roomQuery = query.replace(/^(room|ward|அறை)\s*/i, "").trim();
+
+    // Improved Room Number Extraction (Point 3: AI Engine)
+    // Strips "ward", "room", "no", "number", "அறை" and common noise
+    const roomQuery = query
+        .replace(/(ward|room|no|number|அறை|எண்|பிரிவு)\.?\s*/gi, "")
+        .trim();
 
     try {
         // 0. Try Symptom Match (Point 3: AI Engine)
@@ -131,10 +136,13 @@ app.get('/api/search', async (req, res) => {
             if (dept) return res.json(dept);
         }
 
-        // 1. Try room/ward match
+        // 1. Try robust room/ward match (Wildcard)
         let dept = await Department.findOne({
             where: {
-                room: { [Op.like]: roomQuery }
+                [Op.or]: [
+                    { room: { [Op.like]: `%${roomQuery}%` } },
+                    { id: { [Op.like]: `%${roomQuery}%` } }
+                ]
             }
         });
 
