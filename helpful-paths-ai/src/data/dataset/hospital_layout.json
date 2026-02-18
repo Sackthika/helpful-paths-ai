@@ -3,38 +3,131 @@
         "floor": 0,
         "label": "Ground Floor",
         "labelTA": "தரை தளம்",
+        "description": "Emergency, OPD, Pharmacy, Diagnostics, Billing",
+        "descriptionTA": "அவசர சிகிச்சை, வெளிநோயாளர், மருந்தகம், கண்டறிதல், பில்லிங்",
         "blocks": [
             "A",
-            "B"
+            "B",
+            "D"
+        ],
+        "color": "#3b82f6",
+        "departments": [
+            "reception",
+            "emergency",
+            "ambulance",
+            "ecg",
+            "blood_bank",
+            "radiology",
+            "opd_general",
+            "pharmacy",
+            "billing",
+            "lab",
+            "canteen",
+            "social_work"
+        ],
+        "facilities": [
+            "Main Entrance",
+            "Emergency Entrance",
+            "Ambulance Bay",
+            "ATM",
+            "Wheelchair Access",
+            "Drinking Water",
+            "Restrooms"
         ]
     },
     {
         "floor": 1,
         "label": "1st Floor",
         "labelTA": "முதல் தளம்",
+        "description": "Specialty OPD, General Wards",
+        "descriptionTA": "சிறப்பு வெளிநோயாளர் பிரிவு, பொது வார்டுகள்",
         "blocks": [
             "A",
             "B",
             "C"
+        ],
+        "color": "#10b981",
+        "departments": [
+            "cardiology",
+            "orthopedics",
+            "neurology",
+            "ent",
+            "gastroenterology",
+            "pulmonology",
+            "nephrology",
+            "endocrinology",
+            "ward_general_m",
+            "ward_general_f"
+        ],
+        "facilities": [
+            "Elevator",
+            "Stairs",
+            "Nursing Station",
+            "Waiting Area",
+            "Restrooms",
+            "Drinking Water"
         ]
     },
     {
         "floor": 2,
         "label": "2nd Floor",
         "labelTA": "இரண்டாம் தளம்",
+        "description": "ICU, Operation Theatre, Wards, Maternity",
+        "descriptionTA": "தீவிர சிகிச்சை, அறுவை சிகிச்சை அரங்கம், வார்டுகள், மகப்பேறு",
         "blocks": [
             "A",
             "B",
             "C"
+        ],
+        "color": "#f59e0b",
+        "departments": [
+            "icu",
+            "nicu",
+            "surgery",
+            "ot",
+            "pediatrics",
+            "gynecology",
+            "labour_ward",
+            "urology",
+            "cardio_ward",
+            "neuro_ward"
+        ],
+        "facilities": [
+            "Elevator",
+            "Stairs",
+            "ICU Waiting Lounge",
+            "Nursing Station",
+            "Restrooms",
+            "NICU Waiting Area"
         ]
     },
     {
         "floor": 3,
         "label": "3rd Floor",
         "labelTA": "மூன்றாம் தளம்",
+        "description": "Dermatology, Eye, Psychiatry, Oncology, Dental, Physiotherapy, Admin",
+        "descriptionTA": "தோல் நோய், கண், மனநலம், புற்றுநோய், பல், இயன்முறை சிகிச்சை, நிர்வாகம்",
         "blocks": [
             "A",
             "B"
+        ],
+        "color": "#8b5cf6",
+        "departments": [
+            "dermatology",
+            "ophthalmology",
+            "psychiatry",
+            "oncology",
+            "physiotherapy",
+            "dental",
+            "dietetics",
+            "admin"
+        ],
+        "facilities": [
+            "Elevator",
+            "Stairs",
+            "Waiting Area",
+            "Restrooms",
+            "Drinking Water"
         ]
     }
 ]

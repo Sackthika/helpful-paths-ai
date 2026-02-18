@@ -57,14 +57,44 @@ export const getAllDepartments = async (): Promise<Department[]> => {
 };
 
 export const findDepartment = async (query: string, lang: 'en' | 'ta'): Promise<Department | null> => {
+  // Try backend first
   try {
-    const response = await fetch(`${API_URL}/search/department?q=${encodeURIComponent(query)}&lang=${lang}`);
-    if (!response.ok) return null;
-    return await response.json();
+    const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}&lang=${lang}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.id) return data as Department;
+    }
   } catch (error) {
-    console.error('Error finding department:', error);
-    return null;
+    console.warn('Backend unavailable, falling back to local search:', error);
   }
+
+  // Local JSON fallback — search departments.json directly
+  const q = query.toLowerCase().trim();
+  const departments = departmentsDir as Department[];
+
+  // 1. Exact ID match
+  let found = departments.find(d => d.id === q);
+  if (found) return found;
+
+  // 2. Name / Tamil name match
+  found = departments.find(d =>
+    d.name.toLowerCase().includes(q) ||
+    d.nameTA.includes(q)
+  );
+  if (found) return found;
+
+  // 3. Keywords match
+  found = departments.find(d => {
+    const kw = d.keywords.split(',').map(k => k.trim().toLowerCase());
+    const kwTA = d.keywordsTA.split(',').map(k => k.trim());
+    return kw.some(k => q.includes(k) || k.includes(q)) ||
+      kwTA.some(k => q.includes(k) || k.includes(q));
+  });
+  if (found) return found;
+
+  // 4. Room number match
+  found = departments.find(d => d.room.toLowerCase().includes(q));
+  return found || null;
 };
 
 export async function findPatient(query: string): Promise<Patient | null> {

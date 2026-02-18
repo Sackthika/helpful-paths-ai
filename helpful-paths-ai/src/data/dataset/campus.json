@@ -1,80 +1,371 @@
 {
     "name": "City General Hospital",
+    "nameTA": "நகர பொது மருத்துவமனை",
+    "address": "No. 1, Hospital Road, Chennai - 600 001",
+    "addressTA": "எண். 1, மருத்துவமனை சாலை, சென்னை - 600 001",
+    "phone": "+91-44-2345-6789",
+    "emergency": "108",
     "dimensions": {
-        "width": 100,
-        "height": 100
+        "width": 200,
+        "height": 160
     },
     "buildings": [
         {
             "id": "A",
-            "name": "Block A",
+            "name": "Block A — OPD & Emergency",
+            "nameTA": "பிளாக் A — வெளிநோயாளர் & அவசர சிகிச்சை",
             "label": "Block A",
             "labelTA": "பிளாக் A",
             "type": "building",
+            "color": "#3b82f6",
             "coordinates": {
                 "x": 10,
-                "y": 15,
-                "w": 35,
-                "h": 70
+                "y": 20,
+                "w": 40,
+                "h": 60
             },
+            "floors": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "departments": [
+                "reception",
+                "emergency",
+                "ecg",
+                "blood_bank",
+                "radiology",
+                "opd_general",
+                "orthopedics",
+                "gastroenterology",
+                "nephrology",
+                "icu",
+                "ot",
+                "urology",
+                "neuro_ward",
+                "dermatology",
+                "psychiatry",
+                "physiotherapy",
+                "admin"
+            ],
             "entrances": [
                 {
-                    "x": 27.5,
-                    "y": 85,
-                    "label": "Entrance A"
+                    "x": 30,
+                    "y": 80,
+                    "label": "Main Entrance A",
+                    "labelTA": "முக்கிய நுழைவாயில் A",
+                    "type": "main"
+                },
+                {
+                    "x": 10,
+                    "y": 50,
+                    "label": "Emergency Entrance",
+                    "labelTA": "அவசர நுழைவாயில்",
+                    "type": "emergency"
                 }
+            ],
+            "amenities": [
+                "Elevator",
+                "Stairs",
+                "Wheelchair Ramp",
+                "ATM",
+                "Drinking Water"
             ]
         },
         {
             "id": "B",
-            "name": "Block B",
+            "name": "Block B — Specialty OPD & Wards",
+            "nameTA": "பிளாக் B — சிறப்பு வெளிநோயாளர் & வார்டுகள்",
             "label": "Block B",
             "labelTA": "பிளாக் B",
             "type": "building",
+            "color": "#10b981",
             "coordinates": {
-                "x": 55,
-                "y": 15,
-                "w": 35,
-                "h": 70
+                "x": 60,
+                "y": 20,
+                "w": 40,
+                "h": 60
             },
+            "floors": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "departments": [
+                "pharmacy",
+                "billing",
+                "lab",
+                "canteen",
+                "social_work",
+                "cardiology",
+                "ent",
+                "endocrinology",
+                "ward_general_m",
+                "ward_general_f",
+                "surgery",
+                "gynecology",
+                "labour_ward",
+                "cardio_ward",
+                "ophthalmology",
+                "oncology",
+                "dental",
+                "dietetics"
+            ],
             "entrances": [
                 {
-                    "x": 72.5,
-                    "y": 85,
-                    "label": "Entrance B"
+                    "x": 80,
+                    "y": 80,
+                    "label": "Main Entrance B",
+                    "labelTA": "முக்கிய நுழைவாயில் B",
+                    "type": "main"
                 }
+            ],
+            "amenities": [
+                "Elevator",
+                "Stairs",
+                "Pharmacy",
+                "Cafeteria",
+                "Prayer Room"
             ]
         },
         {
             "id": "C",
-            "name": "Block C",
+            "name": "Block C — Critical Care & Maternity",
+            "nameTA": "பிளாக் C — தீவிர சிகிச்சை & மகப்பேறு",
             "label": "Block C",
             "labelTA": "பிளாக் C",
             "type": "building",
+            "color": "#f59e0b",
             "coordinates": {
-                "x": 32.5,
-                "y": 5,
-                "w": 35,
-                "h": 10
+                "x": 110,
+                "y": 20,
+                "w": 40,
+                "h": 60
             },
-            "description": "Connected on upper floors"
+            "floors": [
+                1,
+                2
+            ],
+            "departments": [
+                "neurology",
+                "pulmonology",
+                "ward_general_m",
+                "ward_general_f",
+                "nicu",
+                "pediatrics"
+            ],
+            "entrances": [
+                {
+                    "x": 130,
+                    "y": 80,
+                    "label": "Entrance C",
+                    "labelTA": "நுழைவாயில் C",
+                    "type": "side"
+                }
+            ],
+            "amenities": [
+                "Elevator",
+                "Stairs",
+                "NICU Waiting Lounge",
+                "Lactation Room"
+            ]
+        },
+        {
+            "id": "D",
+            "name": "Block D — Diagnostics & Imaging",
+            "nameTA": "பிளாக் D — கண்டறிதல் & இமேஜிங்",
+            "label": "Block D",
+            "labelTA": "பிளாக் D",
+            "type": "building",
+            "color": "#8b5cf6",
+            "coordinates": {
+                "x": 10,
+                "y": 95,
+                "w": 40,
+                "h": 35
+            },
+            "floors": [
+                0
+            ],
+            "departments": [
+                "radiology",
+                "lab",
+                "ecg",
+                "blood_bank"
+            ],
+            "entrances": [
+                {
+                    "x": 30,
+                    "y": 130,
+                    "label": "Diagnostics Entrance",
+                    "labelTA": "கண்டறிதல் நுழைவாயில்",
+                    "type": "side"
+                }
+            ],
+            "amenities": [
+                "Waiting Area",
+                "Drinking Water",
+                "Wheelchair Access"
+            ]
+        },
+        {
+            "id": "E",
+            "name": "Block E — Administration & Records",
+            "nameTA": "பிளாக் E — நிர்வாகம் & பதிவுகள்",
+            "label": "Block E",
+            "labelTA": "பிளாக் E",
+            "type": "building",
+            "color": "#ef4444",
+            "coordinates": {
+                "x": 160,
+                "y": 20,
+                "w": 30,
+                "h": 40
+            },
+            "floors": [
+                3
+            ],
+            "departments": [
+                "admin"
+            ],
+            "entrances": [
+                {
+                    "x": 175,
+                    "y": 60,
+                    "label": "Admin Entrance",
+                    "labelTA": "நிர்வாக நுழைவாயில்",
+                    "type": "side"
+                }
+            ],
+            "amenities": [
+                "Waiting Area",
+                "Drinking Water"
+            ]
         }
     ],
     "roads": [
         {
             "x": 0,
-            "y": 90,
-            "w": 100,
+            "y": 140,
+            "w": 200,
             "h": 10,
-            "label": "Main Road"
+            "label": "Main Road",
+            "labelTA": "முக்கிய சாலை"
+        },
+        {
+            "x": 50,
+            "y": 80,
+            "w": 10,
+            "h": 60,
+            "label": "Internal Road A-B",
+            "labelTA": "உள் சாலை A-B"
+        },
+        {
+            "x": 100,
+            "y": 80,
+            "w": 10,
+            "h": 60,
+            "label": "Internal Road B-C",
+            "labelTA": "உள் சாலை B-C"
+        }
+    ],
+    "parking": [
+        {
+            "x": 0,
+            "y": 95,
+            "w": 10,
+            "h": 45,
+            "label": "Parking P1",
+            "labelTA": "பார்க்கிங் P1",
+            "type": "general"
+        },
+        {
+            "x": 155,
+            "y": 95,
+            "w": 45,
+            "h": 45,
+            "label": "Parking P2",
+            "labelTA": "பார்க்கிங் P2",
+            "type": "general"
+        },
+        {
+            "x": 0,
+            "y": 20,
+            "w": 10,
+            "h": 30,
+            "label": "Staff Parking",
+            "labelTA": "ஊழியர் பார்க்கிங்",
+            "type": "staff"
         }
     ],
     "entrances": [
         {
             "id": "main_gate",
             "label": "Main Gate",
-            "x": 50,
-            "y": 100
+            "labelTA": "முக்கிய வாயில்",
+            "x": 100,
+            "y": 150,
+            "type": "main"
+        },
+        {
+            "id": "emergency_gate",
+            "label": "Emergency Gate",
+            "labelTA": "அவசர வாயில்",
+            "x": 10,
+            "y": 150,
+            "type": "emergency"
+        },
+        {
+            "id": "staff_gate",
+            "label": "Staff Gate",
+            "labelTA": "ஊழியர் வாயில்",
+            "x": 190,
+            "y": 150,
+            "type": "staff"
+        }
+    ],
+    "landmarks": [
+        {
+            "id": "reception_desk",
+            "label": "Reception Desk",
+            "labelTA": "வரவேற்பு மேசை",
+            "x": 30,
+            "y": 30,
+            "icon": "info"
+        },
+        {
+            "id": "main_pharmacy",
+            "label": "Main Pharmacy",
+            "labelTA": "முக்கிய மருந்தகம்",
+            "x": 75,
+            "y": 65,
+            "icon": "pill"
+        },
+        {
+            "id": "atm",
+            "label": "ATM",
+            "labelTA": "ஏடிஎம்",
+            "x": 55,
+            "y": 75,
+            "icon": "credit-card"
+        },
+        {
+            "id": "chapel",
+            "label": "Prayer Room / Chapel",
+            "labelTA": "வழிபாட்டு அறை",
+            "x": 150,
+            "y": 75,
+            "icon": "heart"
+        },
+        {
+            "id": "canteen_main",
+            "label": "Main Canteen",
+            "labelTA": "முக்கிய உணவகம்",
+            "x": 75,
+            "y": 25,
+            "icon": "coffee"
         }
     ]
 }
