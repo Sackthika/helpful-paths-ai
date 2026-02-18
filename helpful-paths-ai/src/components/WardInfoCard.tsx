@@ -11,12 +11,36 @@ export default function WardInfoCard({ dept, lang }: WardInfoCardProps) {
   const isTA = lang === "ta";
 
   const items = [
-    { icon: Tag, label: isTA ? "பிரிவு" : "Department", value: isTA ? dept.nameTA : dept.name },
-    { icon: DoorOpen, label: isTA ? "வார்டு / அறை எண்" : "Ward / Room No.", value: dept.room },
-    { icon: Layers, label: isTA ? "தளம்" : "Floor", value: dept.floor === 0 ? (isTA ? "தரை தளம்" : "Ground Floor") : (isTA ? `தளம் ${dept.floor}` : `Floor ${dept.floor}`) },
-    { icon: Building2, label: isTA ? "பிளாக்" : "Block", value: `Block ${dept.block}` },
-    { icon: MapPin, label: isTA ? "பக்கம் / விங்" : "Side / Wing", value: isTA ? dept.sideTA : dept.side },
-    { icon: MapPin, label: isTA ? "வகை" : "Category", value: dept.category },
+    {
+      icon: Tag,
+      label: "Department / பிரிவு",
+      value: `${dept.name} / ${dept.nameTA}`
+    },
+    {
+      icon: DoorOpen,
+      label: "Ward No. / வார்டு எண்",
+      value: dept.room
+    },
+    {
+      icon: Layers,
+      label: "Floor / தளம்",
+      value: `${dept.floor === 0 ? "Ground Floor" : `Floor ${dept.floor}`} / ${dept.floor === 0 ? "தரை தளம்" : `தளம் ${dept.floor}`}`
+    },
+    {
+      icon: Building2,
+      label: "Block / பிளாக்",
+      value: `Block ${dept.block}`
+    },
+    {
+      icon: MapPin,
+      label: "Side / பக்கம்",
+      value: `${dept.side} / ${dept.sideTA}`
+    },
+    {
+      icon: MapPin,
+      label: "Category / வகை",
+      value: dept.category
+    },
   ];
 
   return (
@@ -31,8 +55,11 @@ export default function WardInfoCard({ dept, lang }: WardInfoCardProps) {
           {dept.room}
         </div>
         <div>
-          <p className="text-base font-semibold text-foreground">{isTA ? dept.nameTA : dept.name}</p>
-          <p className="text-xs text-muted-foreground">{isTA ? "வார்டு தகவல்" : "Ward Details"}</p>
+          <p className="text-base font-semibold text-foreground leading-tight">
+            {dept.name}<br />
+            <span className="text-sm opacity-80">{dept.nameTA}</span>
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">Ward Details / வார்டு தகவல்</p>
         </div>
       </div>
 

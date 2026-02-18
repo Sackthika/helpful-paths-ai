@@ -28,7 +28,7 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
     <div className="w-full h-full relative">
       <div className="absolute top-3 left-3 z-10">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {lang === "ta" ? floorInfo.labelTA : floorInfo.label}
+          {floorInfo.label} • {floorInfo.labelTA}
         </span>
       </div>
 
@@ -39,7 +39,7 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
         {/* Corridor */}
         <rect x="2" y="45" width="96" height="10" fill="hsl(var(--muted))" opacity="0.3" />
         <text x="50" y="51" textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="2.5" opacity="0.6">
-          {lang === "ta" ? "நடைபாதை" : "CORRIDOR"}
+          CORRIDOR / நடைபாதை
         </text>
 
         {/* Blocks */}
@@ -73,7 +73,7 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
           <g>
             <rect x="40" y="87" width="20" height="4" rx="1" fill="hsl(var(--primary))" opacity="0.3" />
             <text x="50" y="90.5" textAnchor="middle" fill="hsl(var(--primary))" fontSize="2.5" fontWeight="600">
-              {lang === "ta" ? "நுழைவு" : "ENTRANCE"}
+              ENTRANCE / நுழைவு
             </text>
           </g>
         )}
@@ -105,18 +105,19 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
                 fill="hsl(var(--primary))"
               />
               <text
-                x={highlightDept.x} y={highlightDept.y - 6}
+                x={highlightDept.x} y={highlightDept.y - 7.5}
                 textAnchor="middle" fill="hsl(var(--primary-foreground))"
-                fontSize="2.2" fontWeight="600"
+                fontSize="2" fontWeight="600"
               >
-                {lang === "ta" ? highlightDept.nameTA : highlightDept.name}
+                <tspan x={highlightDept.x} dy="0">{highlightDept.name}</tspan>
+                <tspan x={highlightDept.x} dy="2.5">{highlightDept.nameTA}</tspan>
               </text>
               <text
                 x={highlightDept.x} y={highlightDept.y - 3.5}
                 textAnchor="middle" fill="hsl(var(--primary-foreground))"
                 fontSize="1.8" opacity="0.8"
               >
-                Room {highlightDept.room}
+                Room {highlightDept.room} / அறை {highlightDept.room}
               </text>
             </motion.g>
 

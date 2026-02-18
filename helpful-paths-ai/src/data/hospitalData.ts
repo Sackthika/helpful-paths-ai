@@ -66,9 +66,23 @@ export function getDirections(dept: Department, lang: "en" | "ta"): string {
     }`;
 }
 
+export function getBilingualDirections(dept: Department): { ta: string; en: string } {
+  return {
+    ta: getDirections(dept, "ta"),
+    en: getDirections(dept, "en")
+  };
+}
+
 export function getBotGreeting(lang: "en" | "ta"): string {
   if (lang === "ta") {
     return "🏥 வணக்கம்! நான் உங்கள் மருத்துவமனை வழிகாட்டி.\n\nஎந்த பிரிவுக்கு செல்ல வேண்டும்? தட்டச்சு செய்யவும் அல்லது பேசவும்.\n\nஉதாரணம்: \"ICU எங்க இருக்கு?\" அல்லது \"கண் டாக்டர்\"";
   }
   return "🏥 Welcome! I'm your Hospital Navigation Assistant.\n\nType or speak the department you're looking for.\n\nExample: \"Where is Cardiology OPD?\" or \"ICU\"";
+}
+
+export function getBilingualGreeting(): { ta: string; en: string } {
+  return {
+    ta: getBotGreeting("ta"),
+    en: getBotGreeting("en")
+  };
 }
