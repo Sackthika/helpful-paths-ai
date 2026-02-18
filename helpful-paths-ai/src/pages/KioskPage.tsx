@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, MapPin, Volume2, Camera, UserCheck, MessageSquareMore } from "lucide-react";
 import FloorMap from "@/components/FloorMap";
@@ -29,8 +30,19 @@ export default function KioskPage() {
   const [showCamera, setShowCamera] = useState(false);
   const [mode, setMode] = useState<"senior" | "doctor">("senior");
   const [isLargeFont, setIsLargeFont] = useState(false);
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get('role');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(0);
+
+  // Set mode based on role parameter (Point 1: Role Selection)
+  useEffect(() => {
+    if (role === 'doctor') {
+      setMode('doctor');
+    } else {
+      setMode('senior');
+    }
+  }, [role]);
 
   // Send greeting on mount / language change
   useEffect(() => {
