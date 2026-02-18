@@ -26,6 +26,8 @@ export interface Patient {
   name: string;
   room: string;
   floor: number;
+  phoneNumber?: string;
+  ward?: string;
   dept?: Department;
 }
 
@@ -97,9 +99,16 @@ export const findDepartment = async (query: string, lang: 'en' | 'ta'): Promise<
   return found || null;
 };
 
-export async function findPatient(query: string): Promise<Patient | null> {
+export async function findPatient(criteria: { q?: string; name?: string; id?: string; phone?: string; ward?: string }): Promise<Patient | null> {
   try {
-    const response = await fetch(`${API_URL}/patients/search?q=${encodeURIComponent(query)}`);
+    const params = new URLSearchParams();
+    if (criteria.q) params.append('q', criteria.q);
+    if (criteria.name) params.append('name', criteria.name);
+    if (criteria.id) params.append('id', criteria.id);
+    if (criteria.phone) params.append('phone', criteria.phone);
+    if (criteria.ward) params.append('ward', criteria.ward);
+
+    const response = await fetch(`${API_URL}/patients/search?${params.toString()}`);
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {

@@ -64,23 +64,36 @@ app.get('/api/departments', async (req, res) => {
 
 // Search patients
 app.get('/api/patients/search', async (req, res) => {
-    const { q } = req.query as { q: string };
-
-    if (!q) {
-        return res.status(400).json({ error: 'Query parameter q is required' });
-    }
-
-    const query = q.toLowerCase().trim();
+    const { q, name, id, phone, ward } = req.query as { q?: string, name?: string, id?: string, phone?: string, ward?: string };
 
     try {
-        const patient = await Patient.findOne({
-            where: {
-                [Op.or]: [
-                    { id: { [Op.like]: `%${query}%` } },
-                    { name: { [Op.like]: `%${query}%` } }
-                ]
-            }
-        });
+        let patient;
+
+        if (name || id || phone || ward) {
+            // Precise search if specific fields are provided
+            const where: any = {};
+            if (name) where.name = { [Op.like]: `%${name}%` };
+            if (id) where.id = { [Op.like]: `%${id}%` };
+            if (phone) where.phoneNumber = { [Op.like]: `%${phone}%` };
+            if (ward) where.ward = { [Op.like]: `%${ward}%` };
+
+            patient = await Patient.findOne({ where });
+        } else if (q) {
+            // General search
+            const query = q.toLowerCase().trim();
+            patient = await Patient.findOne({
+                where: {
+                    [Op.or]: [
+                        { id: { [Op.like]: `%${query}%` } },
+                        { name: { [Op.like]: `%${query}%` } },
+                        { phoneNumber: { [Op.like]: `%${query}%` } },
+                        { ward: { [Op.like]: `%${query}%` } }
+                    ]
+                }
+            });
+        } else {
+            return res.status(400).json({ error: 'Search parameters required' });
+        }
 
         if (patient) {
             // Find the department/room to get coordinates
