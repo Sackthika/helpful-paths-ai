@@ -74,7 +74,7 @@ const RoleSelection = () => {
             </motion.div>
 
             {/* Roles Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 w-full max-w-7xl z-10 px-4">
                 {roles.map((role, index) => (
                     <motion.button
                         key={role.id}
