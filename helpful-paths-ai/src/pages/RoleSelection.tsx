@@ -8,24 +8,37 @@ const RoleSelection = () => {
 
     const roles = [
         {
+            id: 'doctor',
+            title: 'Doctor',
+            titleTA: 'டாக்டர்',
+            image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=600",
+            icon: <Building2 size={32} className="text-[#E91E63]" />,
+            description: 'Access patient records and diagnostic tools.',
+            descriptionTA: 'நோயாளி பதிவுகள் மற்றும் நோயறிதல் கருவிகளை அணுகவும்.',
+            bgColor: 'bg-[#FCE4EC]',
+            borderColor: 'border-[#F8BBD0]',
+        },
+        {
             id: 'patient',
             title: 'Patient',
             titleTA: 'நோயாளி',
-            icon: <Users size={40} className="text-secondary-foreground" />,
+            image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=600",
+            icon: <Users size={32} className="text-[#E91E63]" />,
             description: 'Get directions to departments and find your room.',
             descriptionTA: 'துறைகளுக்கான வழிகள் மற்றும் அறையைக் கண்டறிய.',
-            color: 'from-blue-500/20 to-blue-500/5',
-            borderColor: 'border-blue-500/30',
+            bgColor: 'bg-[#FCE4EC]',
+            borderColor: 'border-[#F8BBD0]',
         },
         {
             id: 'others',
             title: 'Others',
             titleTA: 'மற்றவை',
-            icon: <Settings size={40} className="text-orange-500" />,
+            image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600",
+            icon: <Building2 size={32} className="text-[#E91E63]" />,
             description: 'Locate patients, general assistance, and staff directory.',
             descriptionTA: 'நோயாளிகளைக் கண்டறியவும், பொது உதவி மற்றும் ஊழியர் பட்டியல்.',
-            color: 'from-orange-500/20 to-orange-500/5',
-            borderColor: 'border-orange-500/30',
+            bgColor: 'bg-[#FCE4EC]',
+            borderColor: 'border-[#F8BBD0]',
         },
     ];
 
@@ -34,67 +47,72 @@ const RoleSelection = () => {
     };
 
     return (
-        <div className="min-h-screen kiosk-gradient flex flex-col items-center justify-center p-6 relative overflow-hidden">
-            {/* Background Glows */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
+            {/* Soft decorative elements */}
+            <div className="absolute top-[-5%] right-[-5%] w-[30%] h-[30%] bg-[#FCE4EC] rounded-full blur-[80px] opacity-50" />
+            <div className="absolute bottom-[-5%] left-[-5%] w-[30%] h-[30%] bg-[#FCE4EC] rounded-full blur-[80px] opacity-50" />
 
             {/* Header Section */}
             <motion.div
-                initial={{ opacity: 0, y: -30 }}
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-16 z-10"
+                className="text-center mb-12 z-10"
             >
-                <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center shadow-2xl border border-primary/30">
-                        <Building2 className="text-primary" size={36} />
+                <div className="flex flex-col items-center gap-4 mb-4">
+                    <div className="w-20 h-20 bg-[#FCE4EC] rounded-3xl flex items-center justify-center shadow-sm border border-[#F8BBD0]">
+                        <Building2 className="text-[#E91E63]" size={40} />
                     </div>
-                    <div className="text-left">
-                        <h1 className="text-4xl font-display font-black text-foreground tracking-tighter leading-none">
-                            SMART HOSPITAL<br />
-                            <span className="text-primary">NAVIGATION SYSTEM</span>
-                        </h1>
-                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-black tracking-tighter leading-tight">
+                        SMART HOSPITAL<br />
+                        <span className="text-[#E91E63]">NAVIGATION SYSTEM</span>
+                    </h1>
                 </div>
-                <div className="h-0.5 w-64 bg-gradient-to-r from-transparent via-primary/50 to-transparent mx-auto mb-6" />
-                <h2 className="text-xl font-bold text-foreground/80 lowercase tracking-widest bg-muted/30 px-6 py-2 rounded-full inline-block border border-border/50">
+                <p className="text-black/60 font-bold uppercase tracking-[0.2em] text-sm">
                     Select Your Role to Continue
-                </h2>
+                </p>
+                <div className="h-1 w-24 bg-[#E91E63] mx-auto mt-4 rounded-full" />
             </motion.div>
 
             {/* Roles Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl z-10">
                 {roles.map((role, index) => (
                     <motion.button
                         key={role.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * (index + 1) }}
-                        whileHover={{ y: -10, scale: 1.02 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1 * index }}
+                        whileHover={{ y: -8, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handleRoleSelection(role.id)}
-                        className={`glass-surface p-8 rounded-[2.5rem] flex flex-col items-center text-center gap-6 border-2 ${role.borderColor} hover:shadow-2xl hover:shadow-primary/10 transition-all group relative overflow-hidden`}
+                        className={`${role.bgColor} p-0 rounded-[3rem] flex flex-col items-stretch text-left border-2 ${role.borderColor} shadow-xl shadow-pink-100/50 hover:shadow-2xl hover:shadow-pink-200/60 transition-all group overflow-hidden`}
                     >
-                        {/* Gradient Background for card */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${role.color} opacity-30 group-hover:opacity-100 transition-opacity`} />
-
-                        <div className="w-24 h-24 rounded-3xl bg-muted/40 flex items-center justify-center mb-2 shadow-inner group-hover:bg-muted/20 transition-colors relative z-10">
-                            {role.icon}
+                        {/* Image Header */}
+                        <div className="h-56 relative overflow-hidden">
+                            <img
+                                src={role.image}
+                                alt={role.title}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            />
+                            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                            <div className="absolute bottom-6 right-6 w-16 h-16 rounded-2xl bg-white/90 backdrop-blur flex items-center justify-center shadow-lg">
+                                {role.icon}
+                            </div>
                         </div>
 
-                        <div className="relative z-10">
-                            <h3 className="text-2xl font-black text-foreground">{role.title}</h3>
-                            <p className="text-primary font-bold">{role.titleTA}</p>
-                        </div>
+                        {/* Content */}
+                        <div className="p-8 flex flex-col gap-4">
+                            <div>
+                                <h3 className="text-3xl font-black text-black leading-none">{role.title}</h3>
+                                <p className="text-[#E91E63] font-bold text-lg mt-1">{role.titleTA}</p>
+                            </div>
 
-                        <div className="relative z-10">
-                            <p className="text-sm text-muted-foreground font-medium leading-relaxed">{role.description}</p>
-                            <p className="text-xs text-muted-foreground/60 italic mt-1">{role.descriptionTA}</p>
-                        </div>
+                            <div className="space-y-1">
+                                <p className="text-black/70 font-semibold leading-relaxed">{role.description}</p>
+                                <p className="text-black/50 text-sm italic font-medium">{role.descriptionTA}</p>
+                            </div>
 
-                        <div className="mt-4 w-full relative z-10">
-                            <div className="bg-primary text-primary-foreground py-4 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:gap-4 transition-all">
-                                Enter System <ChevronRight size={18} />
+                            <div className="mt-4 bg-white text-black py-4 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 border-2 border-transparent group-hover:border-[#E91E63] group-hover:text-[#E91E63] transition-all">
+                                Enter System <ChevronRight size={20} />
                             </div>
                         </div>
                     </motion.button>
@@ -105,16 +123,16 @@ const RoleSelection = () => {
             <motion.footer
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-20 text-center z-10"
+                transition={{ delay: 0.5 }}
+                className="mt-16 text-center z-10"
             >
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.3em]">
-                    Powered by Advanced AI Navigation Interface v2.0
+                <p className="text-xs font-black text-black/40 uppercase tracking-[0.4em]">
+                    Powered by Advanced AI Navigation
                 </p>
-                <div className="flex gap-4 justify-center mt-4">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    <div className="w-2 h-2 rounded-full bg-primary/40" />
-                    <div className="w-2 h-2 rounded-full bg-primary/20" />
+                <div className="flex gap-2 justify-center mt-6">
+                    <div className="w-8 h-1 rounded-full bg-[#E91E63]" />
+                    <div className="w-2 h-1 rounded-full bg-[#F8BBD0]" />
+                    <div className="w-2 h-1 rounded-full bg-[#F8BBD0]" />
                 </div>
             </motion.footer>
         </div>
