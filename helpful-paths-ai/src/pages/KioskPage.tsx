@@ -10,7 +10,9 @@ import LanguageToggle from "@/components/LanguageToggle";
 import FloorSelector from "@/components/FloorSelector";
 import QuickButtons from "@/components/QuickButtons";
 import CameraAssistant from "@/components/CameraAssistant";
-import { findDepartment, findPatient, getDirections, getBotGreeting, getBilingualDirections, getBilingualGreeting, Department } from "@/data/hospitalData";
+import { findDepartment, findPatient, getDirections, getBotGreeting, getBilingualDirections, getBilingualGreeting, Department, HospitalDataset } from "@/data/hospitalData";
+import { exportHospitalDataToExcel } from "@/lib/exportUtils";
+import { FileDown } from "lucide-react";
 
 interface Message {
   id: number;
@@ -34,19 +36,26 @@ export default function KioskPage() {
   const msgIdRef = useRef(0);
 
 
-  const [visitorForm, setVisitorForm] = useState({ name: "", id: "", phone: "", ward: "" });
-  const [showVisitorForm, setShowVisitorForm] = useState(role === 'others');
+  const [doctorForm, setDoctorForm] = useState({ patientName: "", patientId: "", department: "" });
+  const [othersForm, setOthersForm] = useState({ patientName: "", patientId: "", phoneNumber: "", wardNumber: "" });
+  const [showRoleForm, setShowRoleForm] = useState(role !== 'patient');
 
   // Send greeting on mount / language change
   useEffect(() => {
     let content = "";
-    if (role === 'others') {
-      const gEN = "🏥 Welcome Visitor! Please provide the patient's details below to find them.\n\n(Examples: 'Arun Jaya', 'P101', or '9876543210')";
-      const gTA = "🏥 வருகையாளர் நல்வரவு! நோயாளியைக் கண்டறிய அவர்களின் விவரங்களைக் கீழே வழங்கவும்.\n\n(உதாரணம்: 'Arun Jaya', 'P101', அல்லது '9876543210')";
+    if (role === 'doctor') {
+      const gEN = "🏥 **Doctor Workspace**\nPlease enter the patient details and department to access information.";
+      const gTA = "🏥 **டாக்டர் பணியிடம்**\nதகவலை அணுக நோயாளியின் விவரங்கள் மற்றும் துறையை உள்ளிடவும்.";
+      content = `${gEN}\n\n---\n\n${gTA}`;
+    } else if (role === 'others') {
+      const gEN = "🏥 **General Assistance**\nPlease provide the ward number to find the location or ask any questions.";
+      const gTA = "🏥 **பொது உதவி**\nஇருப்பிடம் கண்டறிய அல்லது கேள்விகளைக் கேட்க வார்டு எண்ணை வழங்கவும்.";
       content = `${gEN}\n\n---\n\n${gTA}`;
     } else {
-      const bilingual = getBilingualGreeting();
-      content = `${bilingual.en}\n\n---\n\n${bilingual.ta}`;
+      // Patient Role
+      const gEN = "🏥 **Patient Portal**\nWelcome! You can see the departments below. Here are some of our specialists available today:\n\n👨‍⚕️ **Dr. Rajesh** (Cardiology) - Room 104\n👩‍⚕️ **Dr. Priya** (Pediatrics) - Room 210\n👨‍⚕️ **Dr. Arun** (Orthopedics) - Room 108";
+      const gTA = "🏥 **நோயாளி போர்டல்**\nநல்வரவு! நீங்கள் கீழே உள்ள துறைகளைக் காணலாம். இன்று கிடைக்கும் சில நிபுணர்கள்:\n\n👨‍⚕️ **டாக்டர். ராஜேஷ்** (இதய நோய்) - அறை 104\n👩‍⚕️ **டாக்டர். பிரியா** (குழந்தை நலம்) - அறை 210\n👨‍⚕️ **டாக்டர். அருண்** (எலும்பு சிகிச்சை) - அறை 108";
+      content = `${gEN}\n\n---\n\n${gTA}`;
     }
 
     setMessages([{
@@ -63,39 +72,74 @@ export default function KioskPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleVisitorSearch = async (e?: React.FormEvent) => {
+  const handleDoctorSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const { name, id, phone, ward } = visitorForm;
-    if (!name && !id && !phone && !ward) return;
+    const { patientName, patientId, department } = doctorForm;
+    if (!patientName && !patientId && !department) return;
 
     const userMsg: Message = {
       id: ++msgIdRef.current,
       role: "user",
-      content: `Searching for patient: ${name || 'N/A'}, ID: ${id || 'N/A'}, Phone: ${phone || 'N/A'}, Ward: ${ward || 'N/A'}`
+      content: `Accessing Patient: ${patientName || 'N/A'}, ID: ${patientId || 'N/A'}, Dept: ${department || 'N/A'}`
     };
     setMessages(prev => [...prev, userMsg]);
 
-    const patient = await findPatient({ name, id, phone, ward });
+    // Try finding patient or department
+    const patient = await findPatient({ name: patientName, id: patientId });
+    const dept = await findDepartment(department || patient?.dept?.id || "", lang);
 
     setTimeout(() => {
-      if (patient && patient.dept) {
-        const bilingual = getBilingualDirections(patient.dept);
-        setHighlightDept(patient.dept);
-        setActiveFloor(patient.dept.floor);
-        const content = `✅ Found Patient: **${patient.name}**\n📍 Location: **${patient.dept.name}**\n\n${bilingual.en}\n\n---\n\n${bilingual.ta}`;
-        setMessages(prev => [
-          ...prev,
-          { id: ++msgIdRef.current, role: "bot", content },
-        ]);
-        speakBilingual(patient.dept.nameTA, patient.dept.name);
-        setShowVisitorForm(false); // Hide form after finding
+      if (dept) {
+        const bilingual = getBilingualDirections(dept);
+        setHighlightDept(dept);
+        setActiveFloor(dept.floor);
+        const content = `✅ **Action Successful**\nPatient: ${patientName || patient?.name || 'Assigned'}\nLocation: **${dept.name}**\n\n${bilingual.en}\n\n---\n\n${bilingual.ta}`;
+        setMessages(prev => [...prev, { id: ++msgIdRef.current, role: "bot", content }]);
+        speakBilingual(dept.nameTA, dept.name);
+        setShowRoleForm(false);
       } else {
-        const notFoundTA = "❌ மன்னிக்கவும், வழங்கப்பட்ட விவரங்களுடன் நோயாளியைக் கண்டுபிடிக்க முடியவில்லை.";
-        const notFoundEN = "❌ Sorry, I couldn't find any patient with the provided details.";
-        setMessages(prev => [
-          ...prev,
-          { id: ++msgIdRef.current, role: "bot", content: `${notFoundEN}\n\n---\n\n${notFoundTA}` },
-        ]);
+        const msg = lang === "ta" ? "❌ விவரங்களைக் கண்டறிய முடியவில்லை." : "❌ Details not found.";
+        setMessages(prev => [...prev, { id: ++msgIdRef.current, role: "bot", content: msg }]);
+      }
+    }, 400);
+  };
+
+  const handleOthersSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const { patientName, patientId, phoneNumber, wardNumber } = othersForm;
+    if (!patientName && !patientId && !phoneNumber && !wardNumber) return;
+
+    const queryInfo = [
+      patientName && `Name: ${patientName}`,
+      patientId && `ID: ${patientId}`,
+      phoneNumber && `Phone: ${phoneNumber}`,
+      wardNumber && `Ward: ${wardNumber}`
+    ].filter(Boolean).join(', ');
+
+    const userMsg: Message = {
+      id: ++msgIdRef.current,
+      role: "user",
+      content: `Searching for: ${queryInfo}`
+    };
+    setMessages(prev => [...prev, userMsg]);
+
+    // Try finding patient first if identifying info is provided
+    const patient = await findPatient({ name: patientName, id: patientId, phone: phoneNumber, ward: wardNumber });
+    const dept = await findDepartment(wardNumber || patient?.dept?.id || "", lang);
+
+    setTimeout(() => {
+      if (dept) {
+        const bilingual = getBilingualDirections(dept);
+        setHighlightDept(dept);
+        setActiveFloor(dept.floor);
+        const patientInfo = patient ? `\nPatient: **${patient.name}**` : "";
+        const content = `📍 **Location Found**${patientInfo}\n\n${bilingual.en}\n\n---\n\n${bilingual.ta}`;
+        setMessages(prev => [...prev, { id: ++msgIdRef.current, role: "bot", content }]);
+        speakBilingual(bilingual.en, bilingual.ta);
+        setShowRoleForm(false);
+      } else {
+        const msg = lang === "ta" ? "❌ விவரங்களைக் கண்டறிய முடியவில்லை." : "❌ Details not found.";
+        setMessages(prev => [...prev, { id: ++msgIdRef.current, role: "bot", content: msg }]);
       }
     }, 400);
   };
@@ -243,6 +287,16 @@ export default function KioskPage() {
         <div className="flex items-center gap-3">
 
           <button
+            onClick={() => exportHospitalDataToExcel(HospitalDataset.departments, HospitalDataset.patients, HospitalDataset.campus.name)}
+            className="px-4 py-2 rounded-xl bg-green-600 text-white font-bold flex items-center gap-2 hover:bg-green-700 transition-all shadow-lg shadow-green-500/20"
+            title="Export to Excel"
+          >
+            <FileDown size={18} />
+            <span className="hidden sm:inline">
+              {lang === "ta" ? "எக்செல்" : "Excel"}
+            </span>
+          </button>
+          <button
             onClick={() => setShowCamera(true)}
             className="px-4 py-2 rounded-xl bg-orange-500 text-white font-bold flex items-center gap-2 hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
           >
@@ -330,7 +384,7 @@ export default function KioskPage() {
 
           <div className="flex-1 overflow-y-auto p-4 scrollbar-thin">
             <AnimatePresence>
-              {showVisitorForm && (
+              {showRoleForm && role === 'doctor' && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -339,17 +393,17 @@ export default function KioskPage() {
                 >
                   <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                     <UserCheck className="text-primary" />
-                    Visitor Registration • பார்வையாளர் பதிவு
+                    Doctor Request • டாக்டர் கோரிக்கை
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Patient Name • பெயர்</label>
                       <input
                         type="text"
                         placeholder="e.g. Selvi"
                         className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
-                        value={visitorForm.name}
-                        onChange={e => setVisitorForm({ ...visitorForm, name: e.target.value })}
+                        value={doctorForm.patientName}
+                        onChange={e => setDoctorForm({ ...doctorForm, patientName: e.target.value })}
                       />
                     </div>
                     <div className="space-y-1">
@@ -358,8 +412,60 @@ export default function KioskPage() {
                         type="text"
                         placeholder="e.g. P101"
                         className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
-                        value={visitorForm.id}
-                        onChange={e => setVisitorForm({ ...visitorForm, id: e.target.value })}
+                        value={doctorForm.patientId}
+                        onChange={e => setDoctorForm({ ...doctorForm, patientId: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Department • துறை</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Cardiology"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
+                        value={doctorForm.department}
+                        onChange={e => setDoctorForm({ ...doctorForm, department: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDoctorSearch()}
+                    className="w-full mt-6 bg-primary text-primary-foreground font-black py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                  >
+                    ACCESS RECORDS • பதிவுகளை அணுகவும்
+                  </button>
+                </motion.div>
+              )}
+
+              {showRoleForm && role === 'others' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="mb-6 p-6 glass-surface rounded-3xl border-2 border-primary/20 bg-primary/5"
+                >
+                  <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <MessageSquareMore className="text-primary" />
+                    Visitor Info • பார்வையாளர் தகவல்
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Patient Name • பெயர்</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Selvi"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
+                        value={othersForm.patientName}
+                        onChange={e => setOthersForm({ ...othersForm, patientName: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Patient ID • ஐடி</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. P101"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
+                        value={othersForm.patientId}
+                        onChange={e => setOthersForm({ ...othersForm, patientId: e.target.value })}
                       />
                     </div>
                     <div className="space-y-1">
@@ -368,32 +474,26 @@ export default function KioskPage() {
                         type="text"
                         placeholder="e.g. 9876543210"
                         className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
-                        value={visitorForm.phone}
-                        onChange={e => setVisitorForm({ ...visitorForm, phone: e.target.value })}
+                        value={othersForm.phoneNumber}
+                        onChange={e => setOthersForm({ ...othersForm, phoneNumber: e.target.value })}
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Ward Name • வார்டு</label>
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Ward Number • வார்டு எண்</label>
                       <input
                         type="text"
-                        placeholder="e.g. General Ward"
+                        placeholder="e.g. 104"
                         className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
-                        value={visitorForm.ward}
-                        onChange={e => setVisitorForm({ ...visitorForm, ward: e.target.value })}
+                        value={othersForm.wardNumber}
+                        onChange={e => setOthersForm({ ...othersForm, wardNumber: e.target.value })}
                       />
                     </div>
                   </div>
                   <button
-                    onClick={() => handleVisitorSearch()}
+                    onClick={() => handleOthersSearch()}
                     className="w-full mt-6 bg-primary text-primary-foreground font-black py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                   >
-                    SEARCH PATIENT • நோயாளியைத் தேடு
-                  </button>
-                  <button
-                    onClick={() => setShowVisitorForm(false)}
-                    className="w-full mt-2 text-xs font-bold text-muted-foreground hover:text-foreground underline py-2"
-                  >
-                    Close Form • படிவத்தை மூடு
+                    FIND LOCATION • இருப்பிடத்தைக் காண்
                   </button>
                 </motion.div>
               )}

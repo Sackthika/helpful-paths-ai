@@ -1,6 +1,7 @@
 import campusMap from './dataset/campus.json';
 import hospitalLayout from './dataset/hospital_layout.json';
 import departmentsDir from './dataset/departments.json';
+import patientsDir from './dataset/patients.json';
 import floorMaps from './dataset/floor_maps.json';
 
 export interface Department {
@@ -155,6 +156,7 @@ export function getBilingualGreeting(): { ta: string; en: string } {
 export const HospitalDataset = {
   campus: campusMap,
   layout: hospitalLayout,
-  departments: departmentsDir,
+  departments: departmentsDir as Department[],
+  patients: patientsDir as Patient[],
   floorMaps: floorMaps
 };
