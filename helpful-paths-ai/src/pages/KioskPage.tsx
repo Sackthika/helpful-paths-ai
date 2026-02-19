@@ -11,8 +11,6 @@ import FloorSelector from "@/components/FloorSelector";
 import QuickButtons from "@/components/QuickButtons";
 import CameraAssistant from "@/components/CameraAssistant";
 import { findDepartment, findPatient, getDirections, getBotGreeting, getBilingualDirections, getBilingualGreeting, Department, HospitalDataset } from "@/data/hospitalData";
-import { exportHospitalDataToExcel } from "@/lib/exportUtils";
-import { FileDown } from "lucide-react";
 
 interface Message {
   id: number;
@@ -286,16 +284,7 @@ export default function KioskPage() {
         </div>
         <div className="flex items-center gap-3">
 
-          <button
-            onClick={() => exportHospitalDataToExcel(HospitalDataset.departments, HospitalDataset.patients, HospitalDataset.campus.name)}
-            className="px-4 py-2 rounded-xl bg-green-600 text-white font-bold flex items-center gap-2 hover:bg-green-700 transition-all shadow-lg shadow-green-500/20"
-            title="Export to Excel"
-          >
-            <FileDown size={18} />
-            <span className="hidden sm:inline">
-              {lang === "ta" ? "எக்செல்" : "Excel"}
-            </span>
-          </button>
+
           <button
             onClick={() => setShowCamera(true)}
             className="px-4 py-2 rounded-xl bg-orange-500 text-white font-bold flex items-center gap-2 hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
