@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Symptom to Department Mapping (Point 3: AI Engine)
+// Symptom to Department Mapping (AI Engine)
 const SYMPTOM_MAP: Record<string, string> = {
     "heart": "cardiology",
     "chest pain": "cardiology",
@@ -31,7 +31,23 @@ const SYMPTOM_MAP: Record<string, string> = {
     "eye": "ophthalmology",
     "vision": "ophthalmology",
     "skin": "dermatology",
-    "rash": "dermatology"
+    "rash": "dermatology",
+    "stomach": "gastroenterology",
+    "digestion": "gastroenterology",
+    "kidney": "nephrology",
+    "dialysis": "nephrology",
+    "urine": "urology",
+    "bladder": "urology",
+    "teeth": "dental",
+    "tooth": "dental",
+    "dentist": "dental",
+    "gum": "dental",
+    "blood test": "lab",
+    "scan": "radiology",
+    "x-ray": "radiology",
+    "mri": "radiology",
+    "diet": "dietetics",
+    "food": "canteen"
 };
 
 const SYMPTOM_MAP_TA: Record<string, string> = {
@@ -49,7 +65,17 @@ const SYMPTOM_MAP_TA: Record<string, string> = {
     "பெண்கள்": "gynecology",
     "கண்": "ophthalmology",
     "பார்வை": "ophthalmology",
-    "தோல்": "dermatology"
+    "தோல்": "dermatology",
+    "வயிறு": "gastroenterology",
+    "செரிமானம்": "gastroenterology",
+    "சிறுநீரகம்": "nephrology",
+    "இரத்தம்": "blood_bank",
+    "பல்": "dental",
+    "குழந்தை நலம்": "pediatrics",
+    "பிரசவம்": "gynecology",
+    "உணவு": "canteen",
+    "எக்ஸ்ரே": "radiology",
+    "ஸ்கேன்": "radiology"
 };
 
 // Get all departments
@@ -70,7 +96,6 @@ app.get('/api/patients/search', async (req, res) => {
         let patient;
 
         if (name || id || phone || ward) {
-            // Flexible search: match ANY of the provided identifying fields
             const orConditions: any[] = [];
             if (name) orConditions.push({ name: { [Op.like]: `%${name.trim()}%` } });
             if (id) orConditions.push({ id: { [Op.like]: `%${id.trim()}%` } });
@@ -81,7 +106,6 @@ app.get('/api/patients/search', async (req, res) => {
                 where: { [Op.or]: orConditions }
             });
         } else if (q) {
-            // General search
             const query = q.toLowerCase().trim();
             patient = await Patient.findOne({
                 where: {
@@ -98,7 +122,6 @@ app.get('/api/patients/search', async (req, res) => {
         }
 
         if (patient) {
-            // Find the department/room to get coordinates
             const dept = await Department.findOne({
                 where: { room: patient.room }
             });
@@ -111,7 +134,6 @@ app.get('/api/patients/search', async (req, res) => {
     }
 });
 
-
 // Search departments
 app.get('/api/search', async (req, res) => {
     const { q, lang } = req.query as { q: string, lang: string };
@@ -121,15 +143,9 @@ app.get('/api/search', async (req, res) => {
     }
 
     const query = q.toLowerCase().trim();
-
-    // Improved Room Number Extraction (Point 3: AI Engine)
-    // Strips "ward", "room", "no", "number", "அறை" and common noise
-    const roomQuery = query
-        .replace(/(ward|room|no|number|அறை|எண்|பிரிவு)\.?\s*/gi, "")
-        .trim();
+    const roomQuery = query.replace(/(ward|room|no|number|அறை|எண்|பிரிவு)\.?\s*/gi, "").trim();
 
     try {
-        // 0. Try Symptom Match (Point 3: AI Engine)
         let deptId = null;
         for (const [symptom, id] of Object.entries(SYMPTOM_MAP)) {
             if (query.includes(symptom)) {
@@ -151,7 +167,6 @@ app.get('/api/search', async (req, res) => {
             if (dept) return res.json(dept);
         }
 
-        // 1. Try robust room/ward match (Wildcard)
         let dept = await Department.findOne({
             where: {
                 [Op.or]: [
@@ -162,7 +177,6 @@ app.get('/api/search', async (req, res) => {
         });
 
         if (!dept) {
-            // 2. Try name/id match
             dept = await Department.findOne({
                 where: {
                     [Op.or]: [
@@ -175,7 +189,6 @@ app.get('/api/search', async (req, res) => {
         }
 
         if (!dept) {
-            // 3. Try keywords match
             const allDepts = await Department.findAll();
             dept = allDepts.find(d => {
                 const keywords = d.keywords.split(',')
