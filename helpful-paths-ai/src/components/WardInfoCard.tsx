@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Building2, DoorOpen, Layers, MapPin, Tag, Activity } from "lucide-react";
+import { Building2, DoorOpen, Layers, MapPin, Tag, Activity, Smartphone } from "lucide-react";
 import { Department } from "@/data/hospitalData";
+import { QRCodeSVG } from "qrcode.react";
 
 interface WardInfoCardProps {
   dept: Department;
@@ -82,14 +83,18 @@ export default function WardInfoCard({ dept, lang }: WardInfoCardProps) {
       {/* Futuristic Tools (Point 8) */}
       <div className="p-4 pt-0 border-t border-border/30 mt-2 grid grid-cols-2 gap-3">
         <div className="bg-primary/5 p-3 rounded-xl border border-primary/10 flex flex-col items-center justify-center text-center gap-2">
-          <div className="w-16 h-16 bg-white p-1 rounded-lg shadow-inner">
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${window.location.origin}/ar-navigation?deptId=${dept.id}`}
-              alt="QR Code"
-              className="w-full h-full"
+          <div className="w-16 h-16 bg-white p-1 rounded-lg shadow-inner flex items-center justify-center">
+            <QRCodeSVG
+              value={`${window.location.origin}/ar-navigation?deptId=${dept.id}`}
+              size={56}
+              level="H"
+              includeMargin={false}
             />
           </div>
-          <p className="text-[10px] font-bold text-primary uppercase leading-tight">Scan for Mobile<br />செல்போனில் பார்க்க</p>
+          <p className="text-[10px] font-bold text-primary uppercase leading-tight flex items-center gap-1">
+            <Smartphone size={10} />
+            <span>Scan for Mobile<br />செல்போனில் பார்க்க</span>
+          </p>
         </div>
         <div className="bg-orange-500/5 p-3 rounded-xl border border-orange-500/10 flex flex-col items-center justify-center text-center gap-2">
           <div className="flex items-center gap-1 text-orange-500">

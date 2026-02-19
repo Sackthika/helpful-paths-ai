@@ -158,5 +158,6 @@ export const HospitalDataset = {
   layout: hospitalLayout,
   departments: departmentsDir as Department[],
   patients: patientsDir as Patient[],
-  floorMaps: floorMaps
+  floorMaps: floorMaps,
+  floors: floors
 };
