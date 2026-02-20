@@ -33,6 +33,7 @@ const state = {
     currentPathIndex: 0,
     watchId: null,
     recordedData: [],
+    isInitialized: false,
 };
 
 // ── QR LOCATIONS ──
@@ -141,13 +142,19 @@ async function goBackToRoles() {
 }
 
 async function initApp() {
-    updateClock();
-    setInterval(updateClock, 1000);
+    // One-time initialization
+    if (!state.isInitialized) {
+        state.isInitialized = true;
+        updateClock();
+        setInterval(updateClock, 1000);
+        bindEvents();
+        initMobileTabs();
+    }
+
+    // Re-runnable initialization (when role changes)
     buildQRGrid();
     buildFloorSelector();
     await loadGraphData();
-    bindEvents();
-    initMobileTabs();
     drawEmptyMap();
 
     // Speak welcome greeting after short delay
@@ -256,6 +263,7 @@ function selectQR(loc, chip) {
 
 // ── FLOOR SELECTOR ──
 function buildFloorSelector() {
+    floorSelector.innerHTML = '';
     const floors = [
         { label: 'All / அனைத்தும்', val: -1 },
         { label: 'G / தரை', val: 0 },
@@ -946,3 +954,110 @@ function showToast(message, type = 'info') {
 
 // Pre-load voices
 window.speechSynthesis?.addEventListener('voiceschanged', () => { });
+
+/* ================================================================
+   LIVE CAMERA OCR LOGIC
+   ================================================================ */
+async function openElderlyMode() {
+    const cameraModal = $("cameraModal");
+    const cameraVideo = $("cameraVideo");
+
+    console.log("Starting Live Camera Scanner...");
+    state.role = "others"; // Use others for general scanning
+    cameraModal.classList.remove("hidden");
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" }
+        });
+        cameraVideo.srcObject = stream;
+        speakText("Live camera scanner activated. Please align the prescription or ward number within the frame. நேரடி கேமரா ஸ்கேனர் இயக்கப்பட்டது. மருந்துச்சீட்டு அல்லது வார்டு எண்ணை சட்டத்திற்குள் சீரமைக்கவும்.");
+    } catch (err) {
+        console.error("Camera error:", err);
+        showToast("Camera access denied. Please check permissions.", "error");
+        cameraModal.classList.add("hidden");
+    }
+}
+
+// Bind camera events after window load
+window.addEventListener('DOMContentLoaded', () => {
+    const cameraModal = $("cameraModal");
+    const cameraVideo = $("cameraVideo");
+    const cameraCanvas = $("cameraCanvas");
+    const captureBtn = $("captureBtn");
+    const closeCameraBtn = $("closeCameraBtn");
+    const ocrStatus = $("ocrStatus");
+
+    if (!closeCameraBtn) return;
+
+    closeCameraBtn.addEventListener("click", () => {
+        const stream = cameraVideo.srcObject;
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        cameraVideo.srcObject = null;
+        cameraModal.classList.add("hidden");
+    });
+
+    captureBtn.addEventListener("click", async () => {
+        captureBtn.disabled = true;
+        captureBtn.innerHTML = "⏳ Scanning... / ஸ்கேன் செய்யப்படுகிறது...";
+        ocrStatus.textContent = "Processing image / படம் செயலாக்கப்படுகிறது...";
+
+        const width = cameraVideo.videoWidth;
+        const height = cameraVideo.videoHeight;
+        cameraCanvas.width = width;
+        cameraCanvas.height = height;
+        const cctx = cameraCanvas.getContext("2d");
+        cctx.drawImage(cameraVideo, 0, 0, width, height);
+
+        try {
+            const result = await Tesseract.recognize(cameraCanvas, "eng", {
+                logger: m => {
+                    if (m.status === "recognizing text") {
+                        ocrStatus.textContent = `Reading: ${Math.round(m.progress * 100)}% / வாசிக்கப்படுகிறது...`;
+                    }
+                }
+            });
+
+            const text = result.data.text.trim();
+            console.log("OCR Match:", text);
+
+            if (text.length < 2) throw new Error("Could not read text clearly. Try better lighting.");
+
+            ocrStatus.textContent = `Found: "${text.slice(0, 15)}..."`;
+            processLiveText(text);
+
+        } catch (err) {
+            showToast(err.message, "error");
+            ocrStatus.textContent = "Ready / தயார்";
+        } finally {
+            captureBtn.disabled = false;
+            captureBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg> Scan Now / இப்போது ஸ்கேன் செய்`;
+        }
+    });
+});
+
+async function processLiveText(text) {
+    const cleaned = text.replace(/[^a-zA-Z0-9\s]/g, " ").trim();
+    const idMatch = cleaned.match(/P\d{3,4}/i);
+    const query = idMatch ? idMatch[0] : cleaned.split(/\s+/)[0];
+
+    showToast(`Searching for: ${query}`, "info");
+
+    // Hide UI
+    $("roleSelection").classList.add("hidden");
+    $("app").classList.remove("hidden");
+
+    const searchInput = $("searchInput");
+    if (searchInput) searchInput.value = query;
+
+    // Stop camera
+    const cameraVideo = $("cameraVideo");
+    const stream = cameraVideo.srcObject;
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    cameraVideo.srcObject = null;
+    $("cameraModal").classList.add("hidden");
+
+    await doSearch();
+}
+
+
