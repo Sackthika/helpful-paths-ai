@@ -1,0 +1,508 @@
+{
+    "nodes": [
+        {
+            "id": "entrance",
+            "label": "Main Entrance",
+            "labelTamil": "முதன்மை நுழைவாயில்",
+            "x": 50,
+            "y": 90,
+            "floor": 0
+        },
+        {
+            "id": "lobby",
+            "label": "Reception Lobby",
+            "labelTamil": "வரவேற்பு கூடம்",
+            "x": 50,
+            "y": 75,
+            "floor": 0
+        },
+        {
+            "id": "elevator_A",
+            "label": "Elevator A",
+            "labelTamil": "மின்தூக்கி A",
+            "x": 30,
+            "y": 60,
+            "floor": 0
+        },
+        {
+            "id": "elevator_B",
+            "label": "Elevator B",
+            "labelTamil": "மின்தூக்கி B",
+            "x": 70,
+            "y": 60,
+            "floor": 0
+        },
+        {
+            "id": "stairs_1",
+            "label": "Staircase 1",
+            "labelTamil": "படிக்கட்டு 1",
+            "x": 20,
+            "y": 50,
+            "floor": 0
+        },
+        {
+            "id": "corridor_1",
+            "label": "Main Corridor",
+            "labelTamil": "முதன்மை நடைபாதை",
+            "x": 50,
+            "y": 55,
+            "floor": 1
+        },
+        {
+            "id": "ward_cardiology",
+            "label": "Cardiology Ward",
+            "labelTamil": "இதயவியல் வார்டு",
+            "x": 15,
+            "y": 40,
+            "floor": 1
+        },
+        {
+            "id": "ward_general",
+            "label": "General Ward",
+            "labelTamil": "பொது வார்டு",
+            "x": 80,
+            "y": 40,
+            "floor": 1
+        },
+        {
+            "id": "icu",
+            "label": "ICU",
+            "labelTamil": "தீவிர சிகிச்சைப் பிரிவு",
+            "x": 50,
+            "y": 30,
+            "floor": 1
+        },
+        {
+            "id": "room_C101",
+            "label": "Room C-101",
+            "labelTamil": "அறை C-101",
+            "x": 10,
+            "y": 30,
+            "floor": 1
+        },
+        {
+            "id": "room_C102",
+            "label": "Room C-102",
+            "labelTamil": "அறை C-102",
+            "x": 10,
+            "y": 20,
+            "floor": 1
+        },
+        {
+            "id": "room_G102",
+            "label": "Room G-102",
+            "labelTamil": "அறை G-102",
+            "x": 85,
+            "y": 30,
+            "floor": 1
+        },
+        {
+            "id": "room_ICU001",
+            "label": "ICU-001",
+            "labelTamil": "ICU-001",
+            "x": 50,
+            "y": 20,
+            "floor": 1
+        },
+        {
+            "id": "corridor_2",
+            "label": "Floor 2 Corridor",
+            "labelTamil": "தளம் 2 நடைபாதை",
+            "x": 50,
+            "y": 55,
+            "floor": 2
+        },
+        {
+            "id": "ward_maternity",
+            "label": "Maternity Ward",
+            "labelTamil": "மகப்பேறு வார்டு",
+            "x": 20,
+            "y": 40,
+            "floor": 2
+        },
+        {
+            "id": "ward_pediatric",
+            "label": "Pediatric Ward",
+            "labelTamil": "குழந்தைகள் வார்டு",
+            "x": 75,
+            "y": 40,
+            "floor": 2
+        },
+        {
+            "id": "room_M201",
+            "label": "Room M-201",
+            "labelTamil": "அறை M-201",
+            "x": 15,
+            "y": 25,
+            "floor": 2
+        },
+        {
+            "id": "room_P202",
+            "label": "Room P-202",
+            "labelTamil": "அறை P-202",
+            "x": 80,
+            "y": 25,
+            "floor": 2
+        },
+        {
+            "id": "corridor_3",
+            "label": "Floor 3 Corridor",
+            "labelTamil": "தளம் 3 நடைபாதை",
+            "x": 50,
+            "y": 55,
+            "floor": 3
+        },
+        {
+            "id": "ward_orthopedic",
+            "label": "Orthopedic Ward",
+            "labelTamil": "எலும்பு முறிவு வார்டு",
+            "x": 20,
+            "y": 40,
+            "floor": 3
+        },
+        {
+            "id": "ward_ent",
+            "label": "ENT Ward",
+            "labelTamil": "காது மூக்கு தொண்டை வார்டு",
+            "x": 75,
+            "y": 40,
+            "floor": 3
+        },
+        {
+            "id": "room_O301",
+            "label": "Room O-301",
+            "labelTamil": "அறை O-301",
+            "x": 15,
+            "y": 25,
+            "floor": 3
+        },
+        {
+            "id": "room_E303",
+            "label": "Room E-303",
+            "labelTamil": "அறை E-303",
+            "x": 80,
+            "y": 25,
+            "floor": 3
+        },
+        {
+            "id": "corridor_4",
+            "label": "Floor 4 Corridor",
+            "labelTamil": "தளம் 4 நடைபாதை",
+            "x": 50,
+            "y": 55,
+            "floor": 4
+        },
+        {
+            "id": "ward_neurology",
+            "label": "Neurology Ward",
+            "labelTamil": "நரம்பியல் வார்டு",
+            "x": 25,
+            "y": 40,
+            "floor": 4
+        },
+        {
+            "id": "room_N401",
+            "label": "Room N-401",
+            "labelTamil": "அறை N-401",
+            "x": 20,
+            "y": 25,
+            "floor": 4
+        },
+        {
+            "id": "corridor_5",
+            "label": "Floor 5 Corridor",
+            "labelTamil": "தளம் 5 நடைபாதை",
+            "x": 50,
+            "y": 55,
+            "floor": 5
+        },
+        {
+            "id": "ward_oncology",
+            "label": "Oncology Ward",
+            "labelTamil": "புற்றுநோய் வார்டு",
+            "x": 25,
+            "y": 40,
+            "floor": 5
+        },
+        {
+            "id": "room_ON501",
+            "label": "Room ON-501",
+            "labelTamil": "அறை ON-501",
+            "x": 20,
+            "y": 25,
+            "floor": 5
+        },
+        {
+            "id": "lab_pathology",
+            "label": "Pathological Lab",
+            "labelTamil": "நோயியல் ஆய்வகம்",
+            "x": 35,
+            "y": 30,
+            "floor": 1,
+            "isFacility": true
+        },
+        {
+            "id": "lab_xray",
+            "label": "X-Ray & Imaging",
+            "labelTamil": "எக்ஸ்-ரே மற்றும் இமேஜிங்",
+            "x": 65,
+            "y": 30,
+            "floor": 1,
+            "isFacility": true
+        },
+        {
+            "id": "lab_bloodbank",
+            "label": "Blood Bank",
+            "labelTamil": "இரத்த வங்கி",
+            "x": 40,
+            "y": 20,
+            "floor": 2,
+            "isFacility": true
+        }
+    ],
+    "edges": [
+        {
+            "from": "entrance",
+            "to": "lobby",
+            "weight": 2
+        },
+        {
+            "from": "lobby",
+            "to": "elevator_A",
+            "weight": 3
+        },
+        {
+            "from": "lobby",
+            "to": "elevator_B",
+            "weight": 3
+        },
+        {
+            "from": "lobby",
+            "to": "stairs_1",
+            "weight": 4
+        },
+        {
+            "from": "elevator_A",
+            "to": "corridor_1",
+            "weight": 2
+        },
+        {
+            "from": "elevator_B",
+            "to": "corridor_1",
+            "weight": 2
+        },
+        {
+            "from": "corridor_1",
+            "to": "ward_cardiology",
+            "weight": 4
+        },
+        {
+            "from": "corridor_1",
+            "to": "ward_general",
+            "weight": 4
+        },
+        {
+            "from": "corridor_1",
+            "to": "icu",
+            "weight": 5
+        },
+        {
+            "from": "ward_cardiology",
+            "to": "room_C101",
+            "weight": 2
+        },
+        {
+            "from": "ward_cardiology",
+            "to": "room_C102",
+            "weight": 3
+        },
+        {
+            "from": "ward_general",
+            "to": "room_G102",
+            "weight": 2
+        },
+        {
+            "from": "icu",
+            "to": "room_ICU001",
+            "weight": 1
+        },
+        {
+            "from": "elevator_A",
+            "to": "corridor_2",
+            "weight": 3
+        },
+        {
+            "from": "elevator_B",
+            "to": "corridor_2",
+            "weight": 3
+        },
+        {
+            "from": "corridor_2",
+            "to": "ward_maternity",
+            "weight": 4
+        },
+        {
+            "from": "corridor_2",
+            "to": "ward_pediatric",
+            "weight": 4
+        },
+        {
+            "from": "ward_maternity",
+            "to": "room_M201",
+            "weight": 2
+        },
+        {
+            "from": "ward_pediatric",
+            "to": "room_P202",
+            "weight": 2
+        },
+        {
+            "from": "elevator_A",
+            "to": "corridor_3",
+            "weight": 4
+        },
+        {
+            "from": "elevator_B",
+            "to": "corridor_3",
+            "weight": 4
+        },
+        {
+            "from": "corridor_3",
+            "to": "ward_orthopedic",
+            "weight": 4
+        },
+        {
+            "from": "corridor_3",
+            "to": "ward_ent",
+            "weight": 4
+        },
+        {
+            "from": "ward_orthopedic",
+            "to": "room_O301",
+            "weight": 2
+        },
+        {
+            "from": "ward_ent",
+            "to": "room_E303",
+            "weight": 2
+        },
+        {
+            "from": "elevator_A",
+            "to": "corridor_4",
+            "weight": 5
+        },
+        {
+            "from": "elevator_B",
+            "to": "corridor_4",
+            "weight": 5
+        },
+        {
+            "from": "corridor_4",
+            "to": "ward_neurology",
+            "weight": 4
+        },
+        {
+            "from": "ward_neurology",
+            "to": "room_N401",
+            "weight": 2
+        },
+        {
+            "from": "elevator_A",
+            "to": "corridor_5",
+            "weight": 6
+        },
+        {
+            "from": "elevator_B",
+            "to": "corridor_5",
+            "weight": 6
+        },
+        {
+            "from": "corridor_5",
+            "to": "ward_oncology",
+            "weight": 4
+        },
+        {
+            "from": "ward_oncology",
+            "to": "room_ON501",
+            "weight": 2
+        },
+        {
+            "from": "corridor_1",
+            "to": "lab_pathology",
+            "weight": 3
+        },
+        {
+            "from": "corridor_1",
+            "to": "lab_xray",
+            "weight": 3
+        },
+        {
+            "from": "corridor_2",
+            "to": "lab_bloodbank",
+            "weight": 4
+        }
+    ],
+    "qrLocations": {
+        "entrance": {
+            "nodeId": "entrance",
+            "label": "Main Entrance",
+            "labelTamil": "முதன்மை நுழைவாயில்",
+            "description": "You are at the Main Entrance",
+            "descriptionTamil": "நீங்கள் முதன்மை நுழைவாயிலில் உள்ளீர்கள்"
+        },
+        "lobby": {
+            "nodeId": "lobby",
+            "label": "Reception Lobby",
+            "labelTamil": "வரவேற்பு கூடம்",
+            "description": "You are at the Reception Lobby",
+            "descriptionTamil": "நீங்கள் வரவேற்பு கூடத்தில் உள்ளீர்கள்"
+        },
+        "floor1": {
+            "nodeId": "corridor_1",
+            "label": "Floor 1 Corridor",
+            "labelTamil": "தளம் 1 நடைபாதை",
+            "description": "You are on Floor 1",
+            "descriptionTamil": "நீங்கள் முதல் தளத்தில் உள்ளீர்கள்"
+        },
+        "floor2": {
+            "nodeId": "corridor_2",
+            "label": "Floor 2 Corridor",
+            "labelTamil": "தளம் 2 நடைபாதை",
+            "description": "You are on Floor 2",
+            "descriptionTamil": "நீங்கள் இரண்டாம் தளத்தில் உள்ளீர்கள்"
+        },
+        "floor3": {
+            "nodeId": "corridor_3",
+            "label": "Floor 3 Corridor",
+            "labelTamil": "தளம் 3 நடைபாதை",
+            "description": "You are on Floor 3",
+            "descriptionTamil": "நீங்கள் மூன்றாம் தளத்தில் உள்ளீர்கள்"
+        },
+        "floor4": {
+            "nodeId": "corridor_4",
+            "label": "Floor 4 Corridor",
+            "labelTamil": "தளம் 4 நடைபாதை",
+            "description": "You are on Floor 4",
+            "descriptionTamil": "நீங்கள் நான்காம் தளத்தில் உள்ளீர்கள்"
+        },
+        "floor5": {
+            "nodeId": "corridor_5",
+            "label": "Floor 5 Corridor",
+            "labelTamil": "தளம் 5 நடைபாதை",
+            "description": "You are on Floor 5",
+            "descriptionTamil": "நீங்கள் ஐந்தாம் தளத்தில் உள்ளீர்கள்"
+        }
+    },
+    "roomToNode": {
+        "C-101": "room_C101",
+        "C-102": "room_C102",
+        "G-102": "room_G102",
+        "ICU-001": "room_ICU001",
+        "M-201": "room_M201",
+        "P-202": "room_P202",
+        "O-301": "room_O301",
+        "E-303": "room_E303",
+        "N-401": "room_N401",
+        "ON-501": "room_ON501"
+    }
+}
