@@ -37,8 +37,7 @@
           </defs>
         </svg>
       </div>
-      <h2 class="loading-title">MediNav</h2>
-      <p class="loading-sub">Hospital Smart Navigation</p>
+      <h2 class="loading-title">NAVIGATION SYSTEM</h2>
       <div class="loading-bar">
         <div class="loading-progress"></div>
       </div>
@@ -49,6 +48,23 @@
   <!-- ===== ROLE SELECTION ===== -->
   <div id="roleSelection" class="role-selection-screen hidden">
     <div class="rs-container">
+      <!-- Quick Action: Live Camera Scanner -->
+      <div class="rs-quick-scan" onclick="openElderlyMode()">
+        <div class="scan-btn-badge">NEW</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+        <div class="scan-btn-text">
+          <strong>Live Camera Scanner</strong>
+          <span class="tamil">நேரடி கேமரா ஸ்கேனர்</span>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"
+          class="arrow">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </div>
+
       <div class="rs-header">
         <div class="rs-logo-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
@@ -57,6 +73,7 @@
           </svg>
         </div>
         <h1 class="rs-title">SMART HOSPITAL<br><span>NAVIGATION SYSTEM</span></h1>
+
         <p class="rs-subtitle">SELECT YOUR ROLE TO CONTINUE</p>
         <div class="rs-divider"></div>
       </div>
@@ -130,6 +147,7 @@
               </svg></button>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -215,6 +233,13 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              </svg>
+            </button>
+            <button class="camera-search-btn" id="cameraSearchBtn" title="Scan Prescription" onclick="openElderlyMode()"
+              style="position: absolute; right: 45px; background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 6px; display: flex; transition: color 0.2s; min-width: 34px; min-height: 34px; align-items: center; justify-content: center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
               </svg>
             </button>
           </div>
@@ -437,6 +462,37 @@
 
   </div><!-- /#app -->
 
+  <div id="cameraModal" class="camera-modal hidden">
+    <div class="camera-container">
+      <div class="camera-header">
+        <h3>Live Scan — Prescription & Ward</h3>
+        <p class="tamil">நேரடி ஸ்கேன் — மருந்துச்சீட்டு மற்றும் வார்டு</p>
+        <button class="close-camera" id="closeCameraBtn">&times;</button>
+      </div>
+      <div class="camera-view">
+        <video id="cameraVideo" autoplay playsinline></video>
+        <canvas id="cameraCanvas" style="display:none;"></canvas>
+        <div class="scan-overlay">
+          <div class="scan-line"></div>
+          <div class="scan-frame"></div>
+        </div>
+      </div>
+      <div class="camera-controls">
+        <p class="camera-hint">Align text inside the frame for automatic detection<br><span class="tamil">தானாகக்
+            கண்டறிய உரையை சட்டத்திற்குள் சீரமைக்கவும்</span></p>
+        <button class="btn-primary" id="captureBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          Scan Now / இப்போது ஸ்கேன் செய்
+        </button>
+        <div id="ocrStatus" class="ocr-status">Ready to scan...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="app.js"></script>
 </body>
 
