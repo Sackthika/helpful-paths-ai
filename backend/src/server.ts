@@ -9,74 +9,106 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Symptom to Department Mapping (AI Engine)
+// ==========================================
+// 🧠 CLINICAL DECISION LOGIC MODEL (STATEMENT)
+// This model defines the deterministic mapping between patient-reported 
+// symptoms and hospital departments using a bilingual keyword-vector approach.
+// Logic: IF (SYMPTOM_MATCH) THEN REDIRECT(DEPARTMENT_ID)
+// ==========================================
+
 const SYMPTOM_MAP: Record<string, string> = {
     "heart": "cardiology",
     "chest pain": "cardiology",
     "breathing": "cardiology",
+    "palpitation": "cardiology",
     "bone": "orthopedics",
     "fracture": "orthopedics",
     "leg pain": "orthopedics",
+    "back pain": "orthopedics",
     "headache": "neurology",
     "seizure": "neurology",
     "brain": "neurology",
+    "dizziness": "neurology",
     "ear": "ent",
     "nose": "ent",
     "throat": "ent",
+    "sinus": "ent",
     "child": "pediatrics",
     "baby": "pediatrics",
     "kids": "pediatrics",
-    "pregnancy": "gynecology",
-    "women": "gynecology",
+    "vaccination": "pediatrics",
+    "pregnancy": "maternity",
+    "women": "maternity",
+    "delivery": "maternity",
     "eye": "ophthalmology",
     "vision": "ophthalmology",
+    "cataract": "ophthalmology",
     "skin": "dermatology",
     "rash": "dermatology",
-    "stomach": "gastroenterology",
-    "digestion": "gastroenterology",
-    "kidney": "nephrology",
-    "dialysis": "nephrology",
+    "itching": "dermatology",
+    "stomach": "general",
+    "digestion": "general",
+    "fever": "general",
+    "cough": "general",
+    "kidney": "urology",
+    "dialysis": "urology",
     "urine": "urology",
     "bladder": "urology",
     "teeth": "dental",
     "tooth": "dental",
     "dentist": "dental",
     "gum": "dental",
-    "blood test": "lab",
+    "blood test": "radiology",
     "scan": "radiology",
     "x-ray": "radiology",
     "mri": "radiology",
-    "diet": "dietetics",
-    "food": "canteen"
+    "ct scan": "radiology",
+    "diet": "general",
+    "food": "general",
+    "cancer": "oncology",
+    "chemo": "oncology",
+    "tumor": "oncology"
 };
 
 const SYMPTOM_MAP_TA: Record<string, string> = {
     "இதயம்": "cardiology",
     "நெஞ்சு வலி": "cardiology",
     "மூச்சு": "cardiology",
+    "துடிப்பு": "cardiology",
     "எலும்பு": "orthopedics",
     "கை கால் வலி": "orthopedics",
+    "முறிவு": "orthopedics",
     "தலைவலி": "neurology",
     "மூளை": "neurology",
+    "மயக்கம்": "neurology",
     "காது": "ent",
     "மூக்கு": "ent",
     "தொண்டை": "ent",
+    "சளி": "ent",
     "குழந்தை": "pediatrics",
-    "பெண்கள்": "gynecology",
+    "தடுப்பூசி": "pediatrics",
+    "பெண்கள்": "maternity",
+    "கர்ப்பம்": "maternity",
+    "தாய்மை": "maternity",
     "கண்": "ophthalmology",
     "பார்வை": "ophthalmology",
     "தோல்": "dermatology",
-    "வயிறு": "gastroenterology",
-    "செரிமானம்": "gastroenterology",
-    "சிறுநீரகம்": "nephrology",
-    "இரத்தம்": "blood_bank",
+    "அரிப்பு": "dermatology",
+    "வயிறு": "general",
+    "செரிமானம்": "general",
+    "காய்ச்சல்": "general",
+    "இருமல்": "general",
+    "சிறுநீரகம்": "urology",
+    "இரத்தம்": "radiology",
     "பல்": "dental",
     "குழந்தை நலம்": "pediatrics",
-    "பிரசவம்": "gynecology",
-    "உணவு": "canteen",
+    "பிரசவம்": "maternity",
+    "உணவு": "general",
     "எக்ஸ்ரே": "radiology",
-    "ஸ்கேன்": "radiology"
+    "ஸ்கேன்": "radiology",
+    "புற்றுநோய்": "oncology"
 };
+
 
 // Get all departments
 app.get('/api/departments', async (req, res) => {
@@ -206,6 +238,19 @@ app.get('/api/search', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Search failed' });
     }
+});
+
+// AI Model Information Statement
+app.get('/api/model-info', (req, res) => {
+    res.json({
+        name: "Hospital Clinical Decision Model",
+        version: "2.1.0",
+        type: "Bilingual Deterministic Symptom Overlay",
+        statement: "Maps natural language symptoms and department aliases to hospital physical locations.",
+        status: "Online",
+        totalMappings: Object.keys(SYMPTOM_MAP).length + Object.keys(SYMPTOM_MAP_TA).length,
+        supportedLanguages: ["en", "ta"]
+    });
 });
 
 initDb().then(() => {

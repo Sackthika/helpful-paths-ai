@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "import-data": "tsx src/scripts/importDataset.ts",
+    "verify-data": "tsx src/scripts/verify_dataset.ts",
+    "generate-report": "tsx src/scripts/generateReport.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

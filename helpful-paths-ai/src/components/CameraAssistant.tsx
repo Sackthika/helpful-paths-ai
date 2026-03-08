@@ -60,13 +60,18 @@ const CameraAssistant: React.FC<CameraAssistantProps> = ({ onDetected, onClose, 
                 { logger: m => console.log(m) }
             );
 
-            // Clean text to find numbers (ward numbers)
+            // 1. Check for URL patterns (QR IPS Tracking)
+            if (text.includes('/navigate?') || text.includes('http')) {
+                onDetected(text.trim());
+                return;
+            }
+
+            // 2. Clean text to find numbers (ward numbers)
             const matches = text.match(/\d+/g);
             if (matches && matches.length > 0) {
                 onDetected(matches[0]);
             } else {
                 // If no direct number, maybe it's a department name? 
-                // For simplicity, let's pass the first line of text
                 const firstLine = text.split('\n')[0].trim();
                 if (firstLine.length > 2) {
                     onDetected(firstLine);
@@ -94,22 +99,32 @@ const CameraAssistant: React.FC<CameraAssistantProps> = ({ onDetected, onClose, 
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-lg bg-card border border-border rounded-3xl overflow-hidden shadow-2xl"
             >
-                <div className="p-4 border-b border-border flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Camera className="text-primary" />
-                        <h2 className="font-bold">
-                            {lang === 'ta' ? 'வழியைக் காட்ட கேமராவில் வார்டு எண்ணைக் காண்பிக்கவும்' : 'Show Ward Number to Camera'}
-                        </h2>
+                <div className="p-4 border-b border-border flex items-center justify-between bg-primary/5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+                            <Camera size={20} />
+                        </div>
+                        <div>
+                            <h2 className="font-bold text-foreground">
+                                {lang === 'ta' ? 'IPS QR ஸ்கேனர்' : 'IPS QR Scanner'}
+                            </h2>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                                Indoor Positioning System
+                            </p>
+                        </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+                    <button onClick={onClose} className="w-10 h-10 hover:bg-muted rounded-full transition-colors flex items-center justify-center">
                         <X size={20} />
                     </button>
                 </div>
 
-                <div className="relative aspect-video bg-black">
+                <div className="relative aspect-square bg-black overflow-hidden">
                     {error ? (
-                        <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-destructive">
-                            {error}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                            <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center text-destructive mb-4">
+                                <X size={32} />
+                            </div>
+                            <p className="font-bold text-destructive">{error}</p>
                         </div>
                     ) : (
                         <>
@@ -117,25 +132,45 @@ const CameraAssistant: React.FC<CameraAssistantProps> = ({ onDetected, onClose, 
                                 ref={videoRef}
                                 autoPlay
                                 playsInline
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover opacity-70"
                             />
-                            <div className="absolute inset-0 border-2 border-primary/50 m-12 rounded-lg pointer-events-none">
-                                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary" />
-                                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary" />
-                                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary" />
-                                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary" />
+
+                            {/* Scanning UI Grid */}
+                            <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 pointer-events-none opacity-20">
+                                {Array.from({ length: 16 }).map((_, i) => (
+                                    <div key={i} className="border-[0.5px] border-white/30" />
+                                ))}
+                            </div>
+
+                            {/* Scanning Bracket */}
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="w-64 h-64 border-2 border-primary/30 rounded-3xl relative">
+                                    <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary -translate-x-1 -translate-y-1 rounded-tl-xl" />
+                                    <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary translate-x-1 -translate-y-1 rounded-tr-xl" />
+                                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary -translate-x-1 translate-y-1 rounded-bl-xl" />
+                                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary translate-x-1 translate-y-1 rounded-br-xl" />
+
+                                    {/* Scanning Line */}
+                                    <motion.div
+                                        className="absolute top-0 left-0 right-0 h-1 bg-primary/50 shadow-[0_0_15px_rgba(233,30,99,0.8)]"
+                                        animate={{ top: ['0%', '100%', '0%'] }}
+                                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                                    />
+                                </div>
                             </div>
                         </>
                     )}
 
                     {isProcessing && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
                             <motion.div
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            >
-                                <RefreshCw className="text-white" size={32} />
-                            </motion.div>
+                                className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full"
+                            />
+                            <p className="text-white font-bold text-xs uppercase tracking-[0.2em] animate-pulse">
+                                Analyzing IPS Data...
+                            </p>
                         </div>
                     )}
 

@@ -100,7 +100,7 @@ export const findDepartment = async (query: string, lang: 'en' | 'ta'): Promise<
   return found || null;
 };
 
-export async function findPatient(criteria: { q?: string; name?: string; id?: string; phone?: string; ward?: string }): Promise<Patient | null> {
+export async function findPatient(criteria: { q?: string; name?: string; id?: string; phone?: string; ward?: string; floor?: string; room?: string }): Promise<Patient | null> {
   try {
     const params = new URLSearchParams();
     if (criteria.q) params.append('q', criteria.q);
@@ -108,14 +108,32 @@ export async function findPatient(criteria: { q?: string; name?: string; id?: st
     if (criteria.id) params.append('id', criteria.id);
     if (criteria.phone) params.append('phone', criteria.phone);
     if (criteria.ward) params.append('ward', criteria.ward);
+    if (criteria.floor) params.append('floor', criteria.floor);
+    if (criteria.room) params.append('room', criteria.room);
 
     const response = await fetch(`${API_URL}/patients/search?${params.toString()}`);
-    if (!response.ok) return null;
-    return await response.json();
+    if (response.ok) return await response.json();
   } catch (error) {
-    console.error('Patient search error:', error);
-    return null;
+    console.warn('Patient backend unavailable, falling back to local search:', error);
   }
+
+  // Local fallback
+  const patients = patientsDir as Patient[];
+  const found = patients.find(p => {
+    if (criteria.id && p.id.toLowerCase() === criteria.id.toLowerCase()) return true;
+    if (criteria.name && p.name.toLowerCase().includes(criteria.name.toLowerCase())) return true;
+    if (criteria.phone && p.phoneNumber === criteria.phone) return true;
+    if (criteria.room && p.room.toLowerCase() === criteria.room.toLowerCase()) return true;
+    if (criteria.ward && p.ward === criteria.ward) return true;
+    if (criteria.floor && p.floor.toString() === criteria.floor) return true;
+    if (criteria.q) {
+      const q = criteria.q.toLowerCase();
+      return p.id.toLowerCase() === q || p.name.toLowerCase().includes(q);
+    }
+    return false;
+  });
+
+  return found || null;
 }
 
 export function getDirections(dept: Department, lang: "en" | "ta"): string {
@@ -152,6 +170,16 @@ export function getBilingualGreeting(): { ta: string; en: string } {
     en: getBotGreeting("en")
   };
 }
+
+export const getModelMetadata = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_URL}/model-info`);
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.error('Error fetching model metadata:', error);
+  }
+  return null;
+};
 
 export const HospitalDataset = {
   campus: campusMap,

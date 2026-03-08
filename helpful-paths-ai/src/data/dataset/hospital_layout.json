@@ -3,131 +3,97 @@
         "floor": 0,
         "label": "Ground Floor",
         "labelTA": "தரை தளம்",
-        "description": "Emergency, OPD, Pharmacy, Diagnostics, Billing",
-        "descriptionTA": "அவசர சிகிச்சை, வெளிநோயாளர், மருந்தகம், கண்டறிதல், பில்லிங்",
+        "description": "Information, Admission, Lab, Pharmacy",
+        "descriptionTA": "தகவல் மையம், அனுமதி, ஆய்வகம், மருந்தகம்",
         "blocks": [
             "A",
             "B",
             "D"
         ],
-        "color": "#3b82f6",
+        "color": "#6366f1",
         "departments": [
-            "reception",
-            "emergency",
-            "ambulance",
-            "ecg",
-            "blood_bank",
-            "radiology",
-            "opd_general",
-            "pharmacy",
-            "billing",
+            "info",
+            "admission",
             "lab",
-            "canteen",
-            "social_work"
+            "pharmacy"
         ],
         "facilities": [
-            "Main Entrance",
-            "Emergency Entrance",
-            "Ambulance Bay",
-            "ATM",
-            "Wheelchair Access",
-            "Drinking Water",
-            "Restrooms"
+            "Reception",
+            "Waiting Area",
+            "Cafe",
+            "Wheelchairs"
         ]
     },
     {
         "floor": 1,
         "label": "1st Floor",
         "labelTA": "முதல் தளம்",
-        "description": "Specialty OPD, General Wards",
-        "descriptionTA": "சிறப்பு வெளிநோயாளர் பிரிவு, பொது வார்டுகள்",
+        "description": "Emergency, Cardiology, Orthopedics, Radiology",
+        "descriptionTA": "அவசர சிகிச்சை, இதய நோய், எலும்பு சிகிச்சை, கதிரியக்கவியல்",
         "blocks": [
             "A",
-            "B",
-            "C"
+            "B"
         ],
-        "color": "#10b981",
+        "color": "#3b82f6",
         "departments": [
+            "emergency",
             "cardiology",
             "orthopedics",
-            "neurology",
-            "ent",
-            "gastroenterology",
-            "pulmonology",
-            "nephrology",
-            "endocrinology",
-            "ward_general_m",
-            "ward_general_f"
+            "radiology"
         ],
         "facilities": [
             "Elevator",
             "Stairs",
-            "Nursing Station",
-            "Waiting Area",
             "Restrooms",
-            "Drinking Water"
+            "Pharmacy"
         ]
     },
     {
         "floor": 2,
         "label": "2nd Floor",
         "labelTA": "இரண்டாம் தளம்",
-        "description": "ICU, Operation Theatre, Wards, Maternity",
-        "descriptionTA": "தீவிர சிகிச்சை, அறுவை சிகிச்சை அரங்கம், வார்டுகள், மகப்பேறு",
+        "description": "Neurology, Pediatrics, Oncology, Maternity",
+        "descriptionTA": "நரம்பு நோய், குழந்தை நலன், புற்றுநோய், மகப்பேறு",
         "blocks": [
             "A",
-            "B",
-            "C"
+            "B"
         ],
-        "color": "#f59e0b",
+        "color": "#10b981",
         "departments": [
-            "icu",
-            "nicu",
-            "surgery",
-            "ot",
+            "neurology",
             "pediatrics",
-            "gynecology",
-            "labour_ward",
-            "urology",
-            "cardio_ward",
-            "neuro_ward"
+            "oncology",
+            "maternity"
         ],
         "facilities": [
             "Elevator",
             "Stairs",
-            "ICU Waiting Lounge",
-            "Nursing Station",
             "Restrooms",
-            "NICU Waiting Area"
+            "Nursing Station"
         ]
     },
     {
         "floor": 3,
         "label": "3rd Floor",
         "labelTA": "மூன்றாம் தளம்",
-        "description": "Dermatology, Eye, Psychiatry, Oncology, Dental, Physiotherapy, Admin",
-        "descriptionTA": "தோல் நோய், கண், மனநலம், புற்றுநோய், பல், இயன்முறை சிகிச்சை, நிர்வாகம்",
+        "description": "Urology, ENT, Ophthalmology, General Medicine",
+        "descriptionTA": "சிறுநீரகவியல், காது மூக்கு தொண்டை, கண் மருத்துவம், பொது மருத்துவம்",
         "blocks": [
             "A",
             "B"
         ],
-        "color": "#8b5cf6",
+        "color": "#f59e0b",
         "departments": [
-            "dermatology",
+            "urology",
+            "ent",
             "ophthalmology",
-            "psychiatry",
-            "oncology",
-            "physiotherapy",
-            "dental",
-            "dietetics",
-            "admin"
+            "general"
         ],
         "facilities": [
             "Elevator",
             "Stairs",
-            "Waiting Area",
             "Restrooms",
-            "Drinking Water"
+            "Admin Office"
         ]
     }
 ]

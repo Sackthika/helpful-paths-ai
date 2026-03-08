@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RoleSelection from "./pages/RoleSelection";
 import KioskPage from "./pages/KioskPage";
 import MobileARView from "./pages/MobileARView";
+import MobileMapView from "./pages/MobileMapView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,8 @@ const App = () => (
           <Route path="/" element={<RoleSelection />} />
           <Route path="/kiosk" element={<KioskPage />} />
           <Route path="/ar-navigation" element={<MobileARView />} />
+          {/* QR-scan mobile navigation — works on any phone browser */}
+          <Route path="/navigate" element={<MobileMapView />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

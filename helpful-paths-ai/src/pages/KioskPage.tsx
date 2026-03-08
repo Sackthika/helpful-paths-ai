@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, MapPin, Volume2, Camera, UserCheck, MessageSquareMore } from "lucide-react";
+import { Send, MapPin, Volume2, Camera, UserCheck, MessageSquareMore, FileText, Navigation } from "lucide-react";
 import FloorMap from "@/components/FloorMap";
 import WardInfoCard from "@/components/WardInfoCard";
 import ChatMessage from "@/components/ChatMessage";
@@ -35,7 +35,7 @@ export default function KioskPage() {
 
 
   const [doctorForm, setDoctorForm] = useState({ patientName: "", patientId: "", department: "" });
-  const [othersForm, setOthersForm] = useState({ patientName: "", patientId: "", phoneNumber: "", wardNumber: "" });
+  const [othersForm, setOthersForm] = useState({ patientName: "", patientId: "", phoneNumber: "", wardNumber: "", category: "", floorNumber: "" });
   const [showRoleForm, setShowRoleForm] = useState(role !== 'patient');
 
   // Send greeting on mount / language change
@@ -51,8 +51,8 @@ export default function KioskPage() {
       content = `${gEN}\n\n---\n\n${gTA}`;
     } else {
       // Patient Role
-      const gEN = "🏥 **Patient Portal**\nWelcome! You can see the departments below. Here are some of our specialists available today:\n\n👨‍⚕️ **Dr. Rajesh** (Cardiology) - Room 104\n👩‍⚕️ **Dr. Priya** (Pediatrics) - Room 210\n👨‍⚕️ **Dr. Arun** (Orthopedics) - Room 108";
-      const gTA = "🏥 **நோயாளி போர்டல்**\nநல்வரவு! நீங்கள் கீழே உள்ள துறைகளைக் காணலாம். இன்று கிடைக்கும் சில நிபுணர்கள்:\n\n👨‍⚕️ **டாக்டர். ராஜேஷ்** (இதய நோய்) - அறை 104\n👩‍⚕️ **டாக்டர். பிரியா** (குழந்தை நலம்) - அறை 210\n👨‍⚕️ **டாக்டர். அருண்** (எலும்பு சிகிச்சை) - அறை 108";
+      const gEN = "🏥 **Patient Portal**\nWelcome! You can see the departments below or use the **AI Diagnostic Assistant** to find the right department based on your symptoms.\n\n👨‍⚕️ **Dr. Rajesh** (Cardiology) - Room 104\n👩‍⚕️ **Dr. Priya** (Pediatrics) - Room 210";
+      const gTA = "🏥 **நோயாளி போர்டல்**\nநல்வரவு! நீங்கள் கீழே உள்ள துறைகளைக் காணலாம் அல்லது உங்கள் அறிகுறிகளின் அடிப்படையில் சரியான பிரிவைக் கண்டறிய **AI கண்டறியும் உதவியாளரை** பயன்படுத்தலாம்.\n\n👨‍⚕️ **டாக்டர். ராஜேஷ்** (இதய நோய்) - அறை 104\n👩‍⚕️ **டாக்டர். பிரியா** (குழந்தை நலம்) - அறை 210";
       content = `${gEN}\n\n---\n\n${gTA}`;
     }
 
@@ -104,14 +104,16 @@ export default function KioskPage() {
 
   const handleOthersSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const { patientName, patientId, phoneNumber, wardNumber } = othersForm;
-    if (!patientName && !patientId && !phoneNumber && !wardNumber) return;
+    const { patientName, patientId, phoneNumber, wardNumber, category, floorNumber } = othersForm;
+    if (!patientName && !patientId && !phoneNumber && !wardNumber && !category && !floorNumber) return;
 
     const queryInfo = [
       patientName && `Name: ${patientName}`,
       patientId && `ID: ${patientId}`,
       phoneNumber && `Phone: ${phoneNumber}`,
-      wardNumber && `Ward: ${wardNumber}`
+      wardNumber && `Ward: ${wardNumber}`,
+      category && `Category: ${category}`,
+      floorNumber && `Floor: ${floorNumber}`
     ].filter(Boolean).join(', ');
 
     const userMsg: Message = {
@@ -122,7 +124,14 @@ export default function KioskPage() {
     setMessages(prev => [...prev, userMsg]);
 
     // Try finding patient first if identifying info is provided
-    const patient = await findPatient({ name: patientName, id: patientId, phone: phoneNumber, ward: wardNumber });
+    const patient = await findPatient({
+      name: patientName,
+      id: patientId,
+      phone: phoneNumber,
+      room: wardNumber,
+      ward: category,
+      floor: floorNumber
+    });
     const dept = await findDepartment(wardNumber || patient?.dept?.id || "", lang);
 
     setTimeout(() => {
@@ -176,7 +185,10 @@ export default function KioskPage() {
         const bilingual = getBilingualDirections(dept);
         setHighlightDept(dept);
         setActiveFloor(dept.floor);
-        const content = `${bilingual.en}\n\n---\n\n${bilingual.ta}`;
+        const isSymptomMatch = !query.toLowerCase().includes(dept.name.toLowerCase()) && !query.includes(dept.nameTA);
+        const aiPrefixEN = isSymptomMatch ? `🧠 **AI Diagnostic Model Prediction:** Based on your symptoms, I recommend the **${dept.name}**.\n\n` : "";
+        const aiPrefixTA = isSymptomMatch ? `🧠 **AI கண்டறியும் மாதிரி கணிப்பு:** உங்கள் அறிகுறிகளின் அடிப்படையில், நான் **${dept.nameTA}** பரிந்துரைக்கிறேன்.\n\n` : "";
+        const content = `${aiPrefixEN}${bilingual.en}\n\n---\n\n${aiPrefixTA}${bilingual.ta}`;
         setMessages(prev => [
           ...prev,
           { id: ++msgIdRef.current, role: "bot", content },
@@ -259,6 +271,17 @@ export default function KioskPage() {
 
   const handleDetectedWard = (text: string) => {
     setShowCamera(false);
+
+    // Check if it's a URL (QR Code likely contains a deep link)
+    if (text.includes('/navigate?')) {
+      const url = new URL(text);
+      const deptId = url.searchParams.get('deptId');
+      if (deptId) {
+        handleQuery(deptId);
+        return;
+      }
+    }
+
     handleQuery(text);
   };
 
@@ -267,7 +290,7 @@ export default function KioskPage() {
   return (
     <div className="min-h-screen kiosk-gradient flex flex-col">
       {/* Header */}
-      <header className="glass-surface px-8 py-5 flex items-center justify-between sticky top-0 z-50">
+      <header className="glass-surface px-8 py-3 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-display font-bold text-xl glow-primary">
             H+
@@ -310,7 +333,7 @@ export default function KioskPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden">
         {/* Map Panel */}
         <motion.div
           layout
@@ -325,7 +348,7 @@ export default function KioskPage() {
             </div>
             <FloorSelector activeFloor={activeFloor} onSelect={setActiveFloor} lang={lang} />
           </div>
-          <div className="flex-1 min-h-[250px] lg:min-h-0">
+          <div className="aspect-square max-h-[500px] w-full mx-auto relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeFloor}
@@ -416,12 +439,22 @@ export default function KioskPage() {
                       />
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleDoctorSearch()}
-                    className="w-full mt-6 bg-primary text-primary-foreground font-black py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                  >
-                    ACCESS RECORDS • பதிவுகளை அணுகவும்
-                  </button>
+                  <div className="flex flex-col gap-3 mt-6">
+                    <button
+                      onClick={() => handleDoctorSearch()}
+                      className="w-full bg-primary text-primary-foreground font-black py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    >
+                      ACCESS RECORDS • பதிவுகளை அணுகவும்
+                    </button>
+                    <a
+                      href="/hospital_dataset_report.html"
+                      target="_blank"
+                      className="w-full bg-white text-primary border-2 border-primary/20 font-bold py-3 rounded-xl hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-sm"
+                    >
+                      <FileText size={16} />
+                      MASTER DATASET REPORT • தரவு அறிக்கை
+                    </a>
+                  </div>
                 </motion.div>
               )}
 
@@ -477,13 +510,51 @@ export default function KioskPage() {
                         onChange={e => setOthersForm({ ...othersForm, wardNumber: e.target.value })}
                       />
                     </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Category • வகை</label>
+                      <select
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
+                        value={othersForm.category}
+                        onChange={e => setOthersForm({ ...othersForm, category: e.target.value })}
+                      >
+                        <option value="">Select Category</option>
+                        <option value="General">General</option>
+                        <option value="ICU">ICU</option>
+                        <option value="Pediatric">Pediatric</option>
+                        <option value="Maternity">Maternity</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Orthopedic">Orthopedic</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Oncology">Oncology</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Floor Number • தளம்</label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 1"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50"
+                        value={othersForm.floorNumber}
+                        onChange={e => setOthersForm({ ...othersForm, floorNumber: e.target.value })}
+                      />
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleOthersSearch()}
-                    className="w-full mt-6 bg-primary text-primary-foreground font-black py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                  >
-                    FIND LOCATION • இருப்பிடத்தைக் காண்
-                  </button>
+                  <div className="flex flex-col gap-3 mt-6">
+                    <button
+                      onClick={() => handleOthersSearch()}
+                      className="w-full bg-primary text-primary-foreground font-black py-4 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    >
+                      FIND LOCATION • இருப்பிடத்தைக் காண்
+                    </button>
+                    <a
+                      href="/hospital_dataset_report.html"
+                      target="_blank"
+                      className="w-full bg-white text-primary border-2 border-primary/20 font-bold py-3 rounded-xl hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-sm"
+                    >
+                      <FileText size={16} />
+                      VIEW ALL PATIENTS • நோயாளிகள் பட்டியல்
+                    </a>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

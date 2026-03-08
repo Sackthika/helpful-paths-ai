@@ -28,9 +28,25 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
   if (!floorInfo) return null;
 
   // Real GPS mapping logic (experimental)
-  // If we had real bounds, we could map lat/lng to 0-100 x/y
   const hasGps = latitude && longitude;
 
+  // Map lat/lng to 0-100 x/y coords
+  const getGpsPos = () => {
+    if (!latitude || !longitude) return { x: 50, y: activeFloor === 0 ? 92 : 15 };
+
+    // Bounds for simulation/demo (adjust to real hospital bounds)
+    const bounds = { n: 13.0827, s: 13.0820, w: 80.2700, e: 80.2710 };
+    const px = ((longitude - bounds.w) / (bounds.e - bounds.w)) * 100;
+    const py = 100 - ((latitude - bounds.s) / (bounds.n - bounds.s)) * 100;
+
+    // Clamp to map area
+    return {
+      x: Math.max(5, Math.min(95, px)),
+      y: Math.max(10, Math.min(90, py))
+    };
+  };
+
+  const userPos = getGpsPos();
 
   return (
     <div className="w-full h-full relative">
@@ -38,18 +54,35 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           {floorInfo.label} • {floorInfo.labelTA}
         </span>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {hasGps ? (
-            <>
+            <div className="flex items-center gap-1.5 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] font-bold text-green-600 uppercase">GPS Active</span>
-            </>
+              <span className="text-[9px] font-bold text-green-600 uppercase">GPS Active</span>
+            </div>
           ) : (
-            <>
+            <div className="flex items-center gap-1.5 bg-orange-500/10 px-2 py-0.5 rounded-full border border-orange-500/20">
               <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-              <span className="text-[10px] font-bold text-orange-600 uppercase italic">Simulation Mode</span>
-            </>
+              <span className="text-[9px] font-bold text-orange-600 uppercase italic">Simulation Mode</span>
+            </div>
           )}
+          {latitude && (
+            <span className="text-[8px] text-muted-foreground font-mono">
+              {latitude.toFixed(4)}, {longitude.toFixed(4)}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Radar Overlay (Optional UI) */}
+      <div className="absolute top-3 right-3 z-10">
+        <div className="w-12 h-12 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center overflow-hidden">
+          <motion.div
+            className="w-full h-full border-r-2 border-primary/40 origin-center"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          />
+          <Compass size={14} className="absolute text-primary/40" />
         </div>
       </div>
 
@@ -73,10 +106,10 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
               <rect
                 x={pos.x} y={pos.y} width={pos.w} height={pos.h}
                 rx="1.5"
-                fill="hsl(var(--secondary))"
-                stroke="hsl(var(--border))"
-                strokeWidth="0.4"
-                opacity="0.6"
+                fill="hsl(var(--primary))"
+                stroke="hsl(var(--primary))"
+                strokeWidth="0.5"
+                opacity="0.2"
               />
               <text x={pos.x + pos.w / 2} y={pos.y + 5} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="3" fontWeight="600">
                 Block {block}
@@ -92,26 +125,40 @@ export default function FloorMap({ activeFloor, highlightDept, lang }: FloorMapP
         {/* Entrance (ground floor only) */}
         {activeFloor === 0 && (
           <g>
-            <rect x="40" y="87" width="20" height="4" rx="1" fill="hsl(var(--primary))" opacity="0.3" />
-            <text x="50" y="90.5" textAnchor="middle" fill="hsl(var(--primary))" fontSize="2.5" fontWeight="600">
+            <rect x="40" y="87" width="20" height="4" rx="1" fill="hsl(var(--primary))" opacity="0.1" />
+            <text x="50" y="90" textAnchor="middle" fill="hsl(var(--primary))" fontSize="2" fontWeight="600">
               ENTRANCE / நுழைவு
             </text>
           </g>
         )}
 
-        {/* User Location (GPS Simulation) */}
+        {/* User Location (GPS) */}
         <g>
           <motion.circle
-            cx="50" cy={activeFloor === 0 ? "92" : "15"} r="4"
+            cx={userPos.x} cy={userPos.y} r="3"
             fill="hsl(var(--primary))" opacity="0.2"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.1, 0.2] }}
+            animate={{ scale: [1, 2, 1], opacity: [0.3, 0.1, 0.3] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
-          <circle cx="50" cy={activeFloor === 0 ? "92" : "15"} r="2" fill="hsl(var(--primary))" stroke="white" strokeWidth="0.3" />
-          <text x="50" y={activeFloor === 0 ? "96" : "10"} textAnchor="middle" fill="hsl(var(--primary))" fontSize="1.8" fontWeight="bold uppercase">
+          <circle cx={userPos.x} cy={userPos.y} r="1.5" fill="hsl(var(--primary))" stroke="white" strokeWidth="0.4" />
+          <motion.path
+            d={`M ${userPos.x} ${userPos.y} L ${userPos.x - 2} ${userPos.y - 4} L ${userPos.x + 2} ${userPos.y - 4} Z`}
+            fill="hsl(var(--primary))"
+            animate={{ y: [-1, 1, -1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+          <text
+            x={userPos.x} y={userPos.y + 6}
+            textAnchor="middle"
+            fill="hsl(var(--primary))"
+            fontSize="1.8"
+            fontWeight="bold"
+            className="uppercase"
+          >
             {lang === 'ta' ? 'நீங்கள் இங்கே' : 'YOU ARE HERE'}
           </text>
         </g>
+
 
         {/* Highlighted department & Path */}
         {highlightDept && highlightDept.floor === activeFloor && (

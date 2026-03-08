@@ -85,7 +85,7 @@ export default function WardInfoCard({ dept, lang }: WardInfoCardProps) {
         <div className="bg-primary/5 p-3 rounded-xl border border-primary/10 flex flex-col items-center justify-center text-center gap-2">
           <div className="w-16 h-16 bg-white p-1 rounded-lg shadow-inner flex items-center justify-center">
             <QRCodeSVG
-              value={`${window.location.origin}/ar-navigation?deptId=${dept.id}`}
+              value={`http://10.163.177.7:8080/navigate?deptId=${dept.id}&lang=${lang}`}
               size={56}
               level="H"
               includeMargin={false}
@@ -93,7 +93,7 @@ export default function WardInfoCard({ dept, lang }: WardInfoCardProps) {
           </div>
           <p className="text-[10px] font-bold text-primary uppercase leading-tight flex items-center gap-1">
             <Smartphone size={10} />
-            <span>Scan for Mobile<br />செல்போனில் பார்க்க</span>
+            <span>Scan → Map + Route<br />QR → வரைபடம் + வழி</span>
           </p>
         </div>
         <div className="bg-orange-500/5 p-3 rounded-xl border border-orange-500/10 flex flex-col items-center justify-center text-center gap-2">
